@@ -1,0 +1,21 @@
+.claude/
+.DS_Store
+ANALYSIS.md
+
+# Local runtime config
+public/config/db_config.php
+
+# Legacy VCS and editor artifacts
+.svn/
+**/.svn/
+public/includes/svn-commit.tmp
+**/svn-commit.tmp
+
+# Local runtime/debug state
+public/dev
+*.log
+*.sql
+
+# OS/editor noise
+*.swp
+*.swo

@@ -74,9 +74,7 @@ if (isset($_POST['submit_reset']))
             $body    .= $reset_url . "\r\n\r\n";
             $body    .= "If you did not request this, ignore this email — your password will not change.\r\n\r\n";
             $body    .= "— {$adminname}";
-            $headers  = "From: {$admin_mail}\r\nX-Mailer: PHP/" . phpversion();
-
-            mail($email, $subject, $body, $headers);
+            bnt_send_email($email, $subject, $body);
         }
 
         $sent = true;

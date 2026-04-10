@@ -24,11 +24,7 @@ if (preg_match("/sched_funcs.php/i", $_SERVER['PHP_SELF'])) {
 
 function QUERYOK ($res)
 {
-    if ($res)
-    {
-        echo " ok.<br>";
-    }
-    else
+    if (!$res)
     {
         die (" Failed.");
     }

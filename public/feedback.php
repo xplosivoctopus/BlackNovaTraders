@@ -39,6 +39,7 @@ $playerinfo = $result->fields;
 if (array_key_exists('content', $_POST) === false)
 {
     echo "<form action=feedback.php method=post>\n";
+    echo bnt_csrf_input();
     echo "<table>\n";
     echo "<tr><td>$l_feedback_to</td><td><input disabled type=text name=dummy size=40 maxlength=40 value=GameAdmin></td></tr>\n";
     echo "<tr><td>$l_feedback_from</td><td><input disabled type=text name=dummy size=40 maxlength=40 value=\"$playerinfo[character_name] - $playerinfo[email]\"></td></tr>\n";
@@ -51,10 +52,19 @@ if (array_key_exists('content', $_POST) === false)
 }
 else
 {
+    bnt_require_csrf();
     $link_to_game = "http://";
     $link_to_game .= ltrim($gamedomain,".");// Trim off the leading . if any
     $link_to_game .= $gamepath;
-    mail("$admin_mail", $l_feedback_subj, "IP address - $ip\r\nGame Name - {$playerinfo['character_name']}\r\nServer URL - {$link_to_game}\r\n\r\n{$_POST['content']}","From: {$playerinfo['email']}\r\nX-Mailer: PHP/" . phpversion());
+    bnt_send_email(
+        (string) $admin_mail,
+        (string) $l_feedback_subj,
+        "IP address - $ip\r\nGame Name - {$playerinfo['character_name']}\r\nServer URL - {$link_to_game}\r\n\r\n{$_POST['content']}",
+        array(
+            'reply_to_email' => (string) $playerinfo['email'],
+            'reply_to_name' => (string) $playerinfo['character_name'],
+        )
+    );
     echo "$l_feedback_messent<BR><BR>";
 }
 

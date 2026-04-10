@@ -79,10 +79,84 @@ require_once "sched_funcs.php";
 
 #echo "<pre>[REQUEST]\n". print_r($_REQUEST, true) ."</pre>\n";
 
+echo <<<HTML
+<style>
+.sched-shell {
+  width: min(1160px, calc(100% - 24px));
+  margin: 0 auto 18px;
+  color: #eef8ff;
+}
+
+.sched-card {
+  border: 1px solid rgba(84, 180, 255, 0.28);
+  background: linear-gradient(180deg, rgba(8, 18, 34, 0.96), rgba(5, 10, 22, 0.98));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+
+.sched-card h2,
+.sched-card h3 {
+  margin: 0 0 8px;
+  color: #ffffff;
+}
+
+.sched-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.sched-stat {
+  padding: 12px 14px;
+  border: 1px solid rgba(84, 180, 255, 0.18);
+  background: rgba(16, 34, 58, 0.88);
+}
+
+.sched-stat__label {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8ed5ff;
+  margin-bottom: 6px;
+}
+
+.sched-stat__value {
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.sched-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+}
+
+.sched-list li {
+  margin-bottom: 6px;
+}
+
+.sched-ok {
+  color: #8ef0a1;
+}
+
+.sched-warn {
+  color: #ffd37a;
+}
+
+.sched-muted {
+  color: #b8d2e7;
+}
+</style>
+<div class="sched-shell">
+HTML;
+
     $starttime = time();
     $lastRun = 0;
     $schedCount = 0;
     $lastrunList = null;
+    $missedEvents = array();
+    $capturedTaskOutput = array();
+    $showSchedulerDebug = isset($_GET['debug']) && $_GET['debug'] === '1';
 
     // Check for missed runs per-entry using next_run field
     $missed_res = $db->Execute("SELECT sched_file, next_run FROM {$db->prefix}scheduler WHERE next_run IS NOT NULL AND next_run < " . (time() - $sched_ticks * 60));
@@ -92,7 +166,10 @@ require_once "sched_funcs.php";
         {
             $missed = $missed_res->fields;
             $overdue = time() - $missed['next_run'];
-            echo "<strong>Warning: '{$missed['sched_file']}' missed its scheduled run by {$overdue} seconds.</strong><br>\n";
+            $missedEvents[] = array(
+                'sched_file' => $missed['sched_file'],
+                'overdue' => $overdue,
+            );
             adminlog($db, 2469, "Missed scheduler event|{$missed['sched_file']}|next_run={$missed['next_run']}|now=" . time() . "|overdue={$overdue}s");
             $missed_res->MoveNext();
         }
@@ -147,7 +224,16 @@ $lastrunList[$event['sched_file']] = $event['last_run'];
             $sched_i = 0;
             while ($sched_i < $multiplier)
             {
+                ob_start();
                 include $event['sched_file'];
+                $taskOutput = trim((string) ob_get_clean());
+                if ($taskOutput !== '')
+                {
+                    $capturedTaskOutput[] = array(
+                        'sched_file' => $event['sched_file'],
+                        'output' => $taskOutput,
+                    );
+                }
                 $sched_i++;
             }
             $sched_res->MoveNext();
@@ -164,10 +250,58 @@ $lastrunList[$event['sched_file']] = $event['last_run'];
     }
 
     $runtime = time() - $starttime;
-    echo "<p>The scheduler took $runtime seconds to execute.<p>";
+    echo "<section class='sched-card'>";
+    echo "<h2>Scheduler Run Complete</h2>";
+    echo "<p class='sched-muted'>The scheduler executed the current queue and updated last-run timestamps for all registered tasks.</p>";
+    echo "<div class='sched-summary'>";
+    echo "<div class='sched-stat'><div class='sched-stat__label'>Runtime</div><div class='sched-stat__value'>{$runtime}s</div></div>";
+    echo "<div class='sched-stat'><div class='sched-stat__label'>Scheduled Jobs</div><div class='sched-stat__value'>{$schedCount}</div></div>";
+    echo "<div class='sched-stat'><div class='sched-stat__label'>Missed Jobs</div><div class='sched-stat__value'>" . count($missedEvents) . "</div></div>";
+    echo "<div class='sched-stat'><div class='sched-stat__label'>Task Output Blocks</div><div class='sched-stat__value'>" . count($capturedTaskOutput) . "</div></div>";
+    echo "</div>";
+    echo "</section>";
+
+    echo "<section class='sched-card'>";
+    echo "<h3>Schedule Health</h3>";
+    if (empty($missedEvents))
+    {
+        echo "<div class='sched-ok'>All scheduler entries were within the expected timing window.</div>";
+    }
+    else
+    {
+        echo "<div class='sched-warn'>Some jobs were overdue before this run. The scheduler has now caught them up.</div>";
+        echo "<div class='sched-muted' style='margin-top:8px;'>Use <code>?debug=1</code> on this page if you want the detailed overdue list.</div>";
+        if ($showSchedulerDebug)
+        {
+            echo "<ul class='sched-list'>";
+            foreach ($missedEvents as $missedEvent)
+            {
+                $file = htmlspecialchars($missedEvent['sched_file'], ENT_QUOTES, 'UTF-8');
+                $overdue = NUMBER($missedEvent['overdue']);
+                echo "<li><strong>{$file}</strong> was overdue by {$overdue} seconds.</li>";
+            }
+            echo "</ul>";
+        }
+    }
+    echo "</section>";
+
+    if ($showSchedulerDebug && !empty($capturedTaskOutput))
+    {
+        echo "<section class='sched-card'>";
+        echo "<h3>Task Output</h3>";
+        echo "<p class='sched-muted'>Captured scheduler script output is shown because debug mode is enabled.</p>";
+        foreach ($capturedTaskOutput as $taskLog)
+        {
+            $file = htmlspecialchars($taskLog['sched_file'], ENT_QUOTES, 'UTF-8');
+            $output = nl2br(htmlspecialchars($taskLog['output'], ENT_QUOTES, 'UTF-8'));
+            echo "<details style='margin-top:10px;'><summary>{$file}</summary><div style='margin-top:10px; padding:12px; background:rgba(10,20,34,0.9); border:1px solid rgba(84,180,255,0.15);'>{$output}</div></details>";
+        }
+        echo "</section>";
+    }
 
     $res = $db->Execute("UPDATE {$db->prefix}scheduler SET last_run=". TIME());
     db_op_result ($db, $res, __LINE__, __FILE__, $db_logging);
+echo "</div>";
 TEXT_GOTOMAIN ();
 include "footer.php";
 ?>

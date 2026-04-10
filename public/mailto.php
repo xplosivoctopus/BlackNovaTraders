@@ -17,67 +17,6 @@
 //
 // File: mailto.php
 
-include "config/config.php";
-updatecookie ();
-
-// New database driven language entries
-load_languages($db, $lang, array('mailto', 'common', 'global_includes', 'global_funcs', 'footer', 'news'), $langvars, $db_logging);
-
-$title = $l_mt_title;
-include "header.php";
-
-if (checklogin () )
-{
-    die();
-}
-
-$res = $db->Execute("SELECT * FROM {$db->prefix}ships WHERE email='$username'");
-db_op_result ($db, $res, __LINE__, __FILE__, $db_logging);
-$playerinfo = $res->fields;
-
-bigtitle ();
-
-if (empty($content))
-{
-    $res = $db->Execute("SELECT * FROM {$db->prefix}ships WHERE ship_destroyed = 'N' AND turns_used > 0 ORDER BY character_name ASC");
-    db_op_result ($db, $res, __LINE__, __FILE__, $db_logging);
-    echo "<form action=mailto2.php method=post>";
-    echo "<table>";
-    echo "<tr><td>To:</td><td><select name=to style='width:200px;'>";
-    while (!$res->EOF)
-    {
-        $row = $res->fields;
-        if ($row['ship_id'] == $to)
-        {
-            echo "\n<option selectED>$row[character_name]</option>";
-        }
-        else
-        {
-            echo "\n<option>$row[character_name]</option>";
-        }
-        $res->MoveNext();
-    }
-    echo "</select></td></tr>";
-    echo "<tr><td>$l_mt_from</td><td><INPUT DISABLED TYPE=TEXT name=dummy SIZE=40 MAXLENGTH=40 VALUE=\"$playerinfo[character_name]\"></td></tr>";
-    echo "<tr><td>$l_mt_subject</td><td><INPUT TYPE=TEXT name=subject SIZE=40 MAXLENGTH=40></td></tr>";
-    echo "<tr><td>$l_mt_message:</td><td><TEXTAREA name=content ROWS=5 COLS=40></TEXTAREA></td></tr>";
-    echo "<tr><td></td><td><INPUT TYPE=SUBMIT VALUE=$l_mt_send><INPUT TYPE=RESET VALUE=Clear></td>";
-    echo "</table>";
-    echo "</form>";
-}
-else
-{
-    echo "$l_mt_sent<br><br>";
-    $content = htmlspecialchars ($content);
-    $subject = htmlspecialchars ($subject);
-
-    $res = $db->Execute("SELECT * FROM {$db->prefix}ships WHERE character_name='$to'");
-    db_op_result ($db, $res, __LINE__, __FILE__, $db_logging);
-    $target_info = $res->fields;
-    $db->Execute("INSERT INTO messages (sender_id, recp_id, subject, message) VALUES ('".$playerinfo[ship_id]."', '".$target_info[ship_id]."', '".$subject."', '".$content."')");
-    // Using this three lines to get recipients ship_id and sending the message -- blindcoder
-}
-
-TEXT_GOTOMAIN();
-include "footer.php";
+header('Location: mailto2.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''));
+exit;
 ?>

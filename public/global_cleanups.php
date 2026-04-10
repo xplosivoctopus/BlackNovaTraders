@@ -149,6 +149,7 @@ if (empty($link_forums))
 
 $ip = $_SERVER['REMOTE_ADDR'];
 $plugin_config = array();
+bnt_load_enabled_addons();
 $admin_list = array(
     array(
         'role'      => 'developer',

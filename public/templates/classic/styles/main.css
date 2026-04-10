@@ -396,6 +396,64 @@ pre.term {
   text-shadow: 0 0 9px rgba(255, 51, 85, 0.58);
 }
 
+/* ── Page content wrapper ───────────────────────────────────────── */
+/*
+ * All pages share <div class="bnt-page"> opened in header.php and
+ * closed in footer.php. This gives every content page a consistent
+ * max-width, horizontal centering, and a styled page title.
+ */
+.bnt-page {
+  width: min(1400px, calc(100% - 24px));
+  margin: 0 auto;
+  padding: 0 0 32px;
+}
+
+/* Page title emitted by bigtitle() — center-aligned, styled as HUD heading */
+.bnt-page > h1 {
+  font-family: var(--font-hud);
+  font-size: 1.15em;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--text-bright);
+  text-shadow: 0 0 32px rgba(0, 238, 255, 0.22);
+  padding: 22px 0 18px;
+  margin: 0 0 20px;
+  border-bottom: 1px solid rgba(0, 238, 255, 0.10);
+  position: relative;
+}
+/* Subtle cyan accent line under the page title */
+.bnt-page > h1::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent, rgba(0, 238, 255, 0.6), transparent);
+  border-radius: 2px;
+}
+
+/*
+ * Center-align tables that don't explicitly span full width.
+ * Tables with width:100% will simply fill the container; all others
+ * will be horizontally centered by the auto margins.
+ */
+.bnt-page table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/*
+ * The admin shell manages its own layout — opt its tables back out
+ * of the auto-centering so the admin forms and data grids are
+ * left-flush inside their panel boxes.
+ */
+.admin-shell table { margin-left: 0; margin-right: 0; }
+
 /* ── Global table defaults ──────────────────────────────────────── */
 table { border-collapse: collapse; }
 
@@ -547,6 +605,130 @@ body.faq td.spacer    { background-color: var(--stripe-even); width: 5%; }
 body.faq table        { border: 0; width: 100%; border-spacing: 0; }
 body.faq table.navbar { border-spacing: 0; }
 body.faq td.lists     { text-align: center; width: 20%; }
+
+/* ── Trade Routes page ──────────────────────────────────────────── */
+/*
+ * Overrides legacy <font>, bgcolor, and align attributes so the page
+ * inherits the site design system rather than rendering raw HTML 3.x.
+ */
+
+/* Center all page-level content (paragraphs, nav buttons, etc.) */
+body.traderoute .bnt-page {
+  text-align: center;
+}
+/* Form content stays left-aligned; form table still centers via margin:auto */
+body.traderoute .bnt-page form {
+  text-align: left;
+}
+
+/* Neutralise <font color> and <font size> — let CSS control colour */
+body.traderoute font          { color: inherit; font-size: inherit; }
+body.traderoute font[color="blue"] { color: var(--cyan); }
+body.traderoute font[color="white"],
+body.traderoute font[color="#fff"],
+body.traderoute font[color="white" i] { color: var(--text-prime); }
+
+/* Table chrome */
+body.traderoute table { border-spacing: 0; }
+
+/* Full-width listing table */
+body.traderoute table[width="100%"] { width: 100%; }
+
+/* Form layout table (traderoute_new) — panel card style */
+body.traderoute table[border="0"]:not([width]) {
+  background: linear-gradient(160deg, rgba(6,18,36,0.98) 0%, rgba(3,10,22,0.99) 100%);
+  border: 1px solid rgba(0,238,255,0.13);
+  border-radius: 5px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+  padding: 16px 20px;
+  position: relative;
+}
+body.traderoute table[border="0"]:not([width])::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(0,238,255,0.45) 35%,
+    rgba(191,95,255,0.3) 65%, transparent 100%);
+  background-size: 200% 100%;
+  animation: topBarFlow 8s linear infinite;
+  border-radius: 5px 5px 0 0;
+}
+
+/* Label cells in the form */
+body.traderoute td[align="right"] {
+  color: var(--text-dim);
+  font-family: var(--font-hud);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding-right: 14px;
+  vertical-align: middle;
+}
+
+/* Form inputs */
+body.traderoute input[type=text],
+body.traderoute input[type=number] {
+  background: rgba(1,8,20,0.98);
+  border: 1px solid rgba(0,238,255,0.26);
+  border-radius: 3px;
+  color: #00eeff;
+  padding: 6px 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  outline: none;
+  caret-color: #00eeff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  vertical-align: middle;
+}
+body.traderoute input[type=text]:focus,
+body.traderoute input[type=number]:focus {
+  border-color: #00eeff;
+  box-shadow: 0 0 0 2px rgba(0,238,255,0.10);
+}
+body.traderoute select {
+  background: rgba(1,8,20,0.98);
+  border: 1px solid rgba(0,238,255,0.26);
+  border-radius: 3px;
+  color: #00eeff;
+  padding: 6px 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: border-color 0.2s;
+}
+body.traderoute select:focus { border-color: #00eeff; }
+body.traderoute input[type=radio] {
+  accent-color: #00eeff;
+  width: 14px; height: 14px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+body.traderoute input[type=submit] {
+  background: rgba(0,238,255,0.07);
+  border: 1px solid rgba(0,238,255,0.35);
+  border-radius: 3px;
+  color: #c0e0ff;
+  cursor: pointer;
+  font-family: var(--font-hud);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 9px 18px;
+  text-transform: uppercase;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+}
+body.traderoute input[type=submit]:hover {
+  border-color: rgba(0,238,255,0.72);
+  background: rgba(0,238,255,0.13);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(0,238,255,0.20);
+}
 
 /* ═══════════════════════════════════════════════════════════════
    INDEX / LOGIN PAGE

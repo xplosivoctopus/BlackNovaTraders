@@ -23,8 +23,6 @@ if (preg_match("/sched_planets.php/i", $_SERVER['PHP_SELF']))
     die();
 }
 
-echo "<strong>PLANETS</strong><p>";
-
 $res = $db->Execute("SELECT * FROM {$db->prefix}planets WHERE owner >0;");
 db_op_result ($db, $res, __LINE__, __FILE__, $db_logging);
 // Using Planet Update Code from BNT version 0.36 due to code bugs.
@@ -92,8 +90,5 @@ if ($sched_planet_valid_credits == true)
     $ret = $db->Execute("UPDATE {$db->prefix}planets SET credits = $max_credits_without_base WHERE credits > $max_credits_without_base AND base = 'N'");
     db_op_result ($db, $ret, __LINE__, __FILE__, $db_logging);
 }
-
-echo "Planets updated.<br><br>";
-echo "<br>";
 
 ?>

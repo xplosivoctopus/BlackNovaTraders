@@ -53,7 +53,7 @@ echo "    <dl class='twocolumn-form'>\n";
 echo "        <dt style='padding:3px'><label for='username'>{$l_login_email}:</label></dt>\n";
 echo "        <dd style='padding:3px'><input type='text' id='username' name='username' size='20' maxlength='40' value='' style='width:200px'></dd>\n";
 echo "        <dt style='padding:3px'><label for='shipname'>{$l_new_shipname}:</label></dt>\n";
-echo "        <dd style='padding:3px'><input type='text' id='shipname' name='shipname' size='20' maxlength='20' value='' style='width:200px'></dd>\n";
+echo "        <dd style='padding:3px'><input type='text' id='shipname' name='shipname' size='25' maxlength='25' value='' style='width:200px'><br><span style='font-size:11px; color:#b8d2e7;'>Maximum 25 characters.</span></dd>\n";
 echo "        <dt style='padding:3px'><label for='character'>{$l_new_pname}:</label></dt>\n";
 echo "        <dd style='padding:3px'><input type='text' id='character' name='character' size='20' maxlength='20' value='' style='width:200px'></dd>\n";
 echo "        <dt style='padding:3px'><label for='password'>{$l_login_pw}</label></dt>\n";

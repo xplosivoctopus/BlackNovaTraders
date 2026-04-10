@@ -1,0 +1,9 @@
+{
+  "slug": "event_calendar",
+  "name": "Event Calendar",
+  "version": "1.0.0",
+  "author": "Codex",
+  "description": "Player-facing live ops calendar with scheduled events, active events, announcements, and an admin control panel.",
+  "bootstrap": "bootstrap.php"
+}
+

@@ -150,79 +150,49 @@ if ($found_blues === 0)
 }
 echo "<br>\n";
 
-$title="Loaded Plugins";
+$title="Loaded Addons";
 bigtitle();
 
-if (count($plugin_config) <=0)
+$addons = bnt_discover_addons();
+$enabled_addons = array();
+foreach ($addons as $addon)
 {
-    echo "<div style='width:798px; font-size:14px; color:#fff; background-color:#500050; padding-top:2px; padding-bottom:2px; border:#fff 1px solid;'>&nbsp;No Plugins enabled.</div>\n";
+    if (!empty($addon['enabled']))
+    {
+        $enabled_addons[] = $addon;
+    }
+}
+
+if (count($enabled_addons) <= 0)
+{
+    echo "<div style='width:798px; font-size:14px; color:#fff; background-color:#500050; padding-top:2px; padding-bottom:2px; border:#fff 1px solid;'>&nbsp;No Addons enabled.</div>\n";
     echo "<br>\n";
 }
 else
 {
-   $plugin_id = 0;
-   foreach ($plugin_config as $plugin_name => $plugin_switches)
-   {
-       if ($plugin_config[$plugin_name]['enabled'] == true && (isset($plugin_config[$plugin_name]['has_settings']) && $plugin_config[$plugin_name]['has_settings'] == true))
-       {
-           if (is_callable(array($$plugin_name, 'getPluginInfo')))
-           {
-               $plugin_id ++;
-               $pluginInfo = call_user_func( array($$plugin_name, 'getPluginInfo') );
-#              $pluginInfo = $$plugin_name->getPluginInfo();
-               $pluginCount = count($pluginInfo['modules']);
+    $addon_id = 0;
+    foreach ($enabled_addons as $addon)
+    {
+        $addon_id++;
+        $addon_slug = htmlspecialchars($addon['slug'], ENT_QUOTES, 'UTF-8');
+        $addon_name = htmlspecialchars($addon['name'], ENT_QUOTES, 'UTF-8');
+        $addon_version = htmlspecialchars($addon['version'], ENT_QUOTES, 'UTF-8');
+        $addon_author = htmlspecialchars($addon['author'], ENT_QUOTES, 'UTF-8');
+        $addon_description = htmlspecialchars($addon['description'], ENT_QUOTES, 'UTF-8');
+        $addon_bootstrap = htmlspecialchars((string) ($addon['bootstrap_path'] ?? ''), ENT_QUOTES, 'UTF-8');
 
-               $plugin['id']            = "0x". str_pad($plugin_id, 4, "0", STR_PAD_LEFT);
-               $plugin['type']            = $plugin_config[$plugin_name]['plugin_type'];
-
-               $plugin['name']            = $pluginInfo['name'];
-               $plugin['version']        = $pluginInfo['version'];
-               $plugin['author']        = $pluginInfo['author'];
-
-               if (isset($pluginInfo['isDisabled']) && $pluginInfo['isDisabled'] == true)
-               {
-                   $plugin['name'] .= " (<span style='color:#f00;'>Diasbled</span>)";
-               }
-
-               echo "<table style='width:800px; font-size:14px; color:#fff; border:#fff 1px solid;' border='0' cellspacing='0' cellpadding='2'>";
-               $line_color = "#500050";
-#              title("Plugin Type: {$plugin['title']}");
-               line("ID:","<span style='color:#ff0; font-size:14px;'>{$plugin['id']}</span>", "right");
-               line("Name:","<span style='color:#ff0; font-size:14px;'>{$plugin['name']}</span>", "right");
-               line("Version:","<span style='color:#ff0; font-size:14px;'>v{$plugin['version']}</span>", "right");
-               line("Author:", "<span style='color:#0f0; font-size:14px;'>{$plugin['author']}</span>", "right");
-               line("Type:","<span style='color:#fff; font-size:14px;'>{$plugin['type']}</span>", "right");
-
-               if ($pluginCount >0)
-               {
-                   line_spacer();$line_color = "#C0C0C0";
-                   line_a("<span style='color:#000; font-size:10px; height:10px; padding:0px;'>Loaded {$pluginCount} Modules</span>", "center");
-                   foreach ($pluginInfo['modules'] as $module_name => $module)
-                   {
-                       if (class_exists($module_name))
-                       {
-                           $module_disabled = null;
-                           if (isset($module['isDisabled']) && $module['isDisabled'] == true)
-                           {
-                               $module_disabled = " (<span style='color:#f00;'>Diasbled</span>)";
-                           }
-
-                           $module_stage = null;
-                           if (isset($module['stage']))
-                           {
-                               $module_stage = " [<span style='color:#ff0;'>{$module['stage']}</span>]";
-                           }
-
-                           line2("<span style='font-size:12px;'>{$module['AppName']}{$module_disabled}{$module_stage}</span>","<span style='color:#ff0; font-size:12px;'>v{$module['Version']} <span style='color:#fff;'>[<span style='color:#0f0;'>{$module['Author']}</span>]</span></span>", "right");
-                       }
-                   }
-                   echo "<tr><td colspan=\"2\" style='height:1px; padding:0px; background-color:#FFCC00;'></td></tr>\n";
-               }
-           }
-           echo "</table>\n";
-           echo "<br>\n";
-       }
-   }
+        echo "<table style='width:800px; font-size:14px; color:#fff; border:#fff 1px solid;' border='0' cellspacing='0' cellpadding='2'>";
+        $line_color = "#500050";
+        line("ID:","<span style='color:#ff0; font-size:14px;'>0x" . str_pad((string) $addon_id, 4, "0", STR_PAD_LEFT) . "</span>", "right");
+        line("Name:","<span style='color:#ff0; font-size:14px;'>{$addon_name}</span>", "right");
+        line("Version:","<span style='color:#ff0; font-size:14px;'>v{$addon_version}</span>", "right");
+        line("Author:", "<span style='color:#0f0; font-size:14px;'>{$addon_author}</span>", "right");
+        line("Slug:","<span style='color:#fff; font-size:14px;'>{$addon_slug}</span>", "right");
+        line("Bootstrap:","<span style='color:#09f; font-size:14px;'>{$addon_bootstrap}</span>", "right");
+        line("Description:","<span style='color:#fff; font-size:14px;'>{$addon_description}</span>", "right");
+        echo "</table>\n";
+        echo "<br>\n";
+    }
 }
 
 $title="Game Settings";
@@ -331,7 +301,7 @@ if (empty($username))
 }
 else
 {
-    echo str_replace("[here]", "<a href='main.php" . $link . "'>" . $l->get('l_here') . "</a>", $l->get('l_global_mmenu'));
+    TEXT_GOTOMAIN('main.php' . $link);
 }
 
 include "footer.php";

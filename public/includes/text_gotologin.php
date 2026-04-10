@@ -24,7 +24,6 @@ if (preg_match("/text_gotologin.php/i", $_SERVER['PHP_SELF'])) {
 
 function TEXT_GOTOLOGIN ()
 {
-    global $l;
-    echo str_replace("[here]", "<a href='index.php'>" . $l->get('l_here') . "</a>", $l->get('l_global_mlogin'));
+    echo bnt_nav_button_html('index.php', '< Login');
 }
 ?>

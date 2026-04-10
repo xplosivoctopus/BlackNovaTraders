@@ -386,7 +386,7 @@ l_gns_bforbid                           = "Die Basen in diesem Sektor stören Dei
 l_gns_pcreate                           = "Planet erzeugt.";
 
 [global_funcs]
-l_global_mmenu                          = "Klicke [here] um ins Hauptmen&uuml; zugelangen.";
+l_global_mmenu                          = "Zum Kommandozentrum zur&uuml;ck [here].";
 l_global_mlogin                         = "Klicke [here] um zur Startseite zur&uuml;ck zugelangen.";
 l_global_needlogin                      = "You need to log in, click [here].";
 l_global_died                           = "Der Spieler ist leider gestorben! [here] Dies passierte";
@@ -544,7 +544,7 @@ l_log_nopod                             = "Du hast keine Rettungskapsel und bist
 l_log_log                               = "[player]s Log";
 l_log_start                             = "Log Eintrag f&uuml;r";
 l_log_end                               = "Ende des Log Eintrages f&uuml;r";
-l_log_click                             = "Klicke [here] um zum Hauptmen&uuml; zu gelangen.";
+l_log_click                             = "Zum Kommandozentrum zur&uuml;ck [here].";
 l_log_note                              = "Anmerkung: Wenn diese Seite nicht korrekt dargestellt wird oder Dich nervt, kannst Du das hier &auml;ndern:[here]";
 l_log_note_disable                      = "disable them";
 l_log_text_LOG_LOGIN                    = "Du bist eingeloggt mit IP [ip].";

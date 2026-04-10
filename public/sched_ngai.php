@@ -11,8 +11,6 @@ if (preg_match("/sched_ngai.php/i", $_SERVER['PHP_SELF']))
     die();
 }
 
-echo "<br><strong>NGAI TURNS</strong><br><br>";
-
 // Include xenobe support functions (reused by NGAI)
 include_once "includes/xenobe_hunter.php";
 include_once "includes/xenobe_move.php";
@@ -103,12 +101,4 @@ if ($res) $res->_close();
 $result = $db->Execute("UNLOCK TABLES");
 db_op_result($db, $result, __LINE__, __FILE__, $db_logging);
 
-// ── Summary output ────────────────────────────────────────────────────────────
-echo "Processed $ngai_total active NGAI ships:<br>";
-foreach ($ngai_counts as $type => $cnt)
-{
-    if ($cnt > 0)
-        echo "&nbsp;&nbsp;$cnt " . ucfirst($type) . "(s)<br>";
-}
-echo "NGAI TURNS COMPLETE.<br><br>";
 ?>

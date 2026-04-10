@@ -386,7 +386,7 @@ l_gns_bforbid                           = "Las bases que hay en este sector esta
 l_gns_pcreate                           = "Planeta creado.";
 
 [global_funcs]
-l_global_mmenu                          = "Pulsa [here] para volver al menú principal.";
+l_global_mmenu                          = "Volver al centro de mando [here].";
 l_global_mlogin                         = "Pulsa [here] para volver a la pantalla de conexión.";
 l_global_needlogin                      = "Necesitas estar conectado, pulsa [here].";
 l_global_died                           = "¡El jugador está MUERTO! [here] está lo que ha ocurido";
@@ -544,7 +544,7 @@ l_log_nopod                             = "No tenías cápsula de salvamento. Has 
 l_log_log                               = "Diario de [player]";
 l_log_start                             = "Entrada en el diario para";
 l_log_end                               = "Fin de la entrada de diario para";
-l_log_click                             = "Pulsa [here] para volver al menú principal.";
+l_log_click                             = "Volver al centro de mando [here].";
 l_log_note                              = "NOTA: Si esta página se muestra incorrectamente, o si simplemente no te gustan los efectos de html dinámico, o lo encuentras molesto, puedes desactivarlos [here]";
 l_log_note_disable                      = "disable them";
 l_log_text_LOG_LOGIN                    = "Te has conectado, desde [ip].";

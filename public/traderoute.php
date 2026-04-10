@@ -24,6 +24,7 @@ updatecookie ();
 load_languages ($db, $lang, array('traderoutes', 'common', 'global_includes', 'global_funcs', 'footer'), $langvars, $db_logging);
 
 $title = $l_tdr_title;
+$body_class = 'traderoute';
 include "header.php";
 
 $portfull = null; // This fixes an error of undefined variables on 1518
@@ -171,7 +172,7 @@ if ($num_traderoutes == 0)
 }
 else
 {
-    echo '<table border=1 cellspacing=1 cellpadding=2 width="100%" align="center">' .
+    echo '<table border=1 cellspacing=1 cellpadding=2>' .
          '<tr bgcolor=' . $color_line2 . '><td align="center" colspan=7><strong><font color=white>
          ';
 
@@ -384,9 +385,7 @@ else
     echo "</table><p>";
 }
 
-echo "<div style='text-align:left;'>\n";
 TEXT_GOTOMAIN();
-echo "</div>\n";
 
 include "footer.php";
 
@@ -395,9 +394,7 @@ function traderoute_die ($error_msg)
     global $l_footer_until_update, $l_footer_players_on_1, $l_footer_players_on_2, $l_footer_one_player_on;
     global $sched_ticks, $color_line1, $color_line2, $color_header, $servertimezone;
     echo "<p>$error_msg<p>";
-    echo "<div style='text-align:left;'>\n";
     TEXT_GOTOMAIN();
-    echo "</div>\n";
     include "footer.php";
     die();
 }
@@ -979,9 +976,7 @@ function traderoute_new($traderoute_id)
         </form>
         ";
 
-    echo "<div style='text-align:left;'>\n";
     TEXT_GOTOMAIN();
-    echo "</div>\n";
 
     include "footer.php";
     die();
@@ -2784,7 +2779,7 @@ function traderoute_engage($j)
 function traderoute_results_table_top()
 {
     global $color_line2,$l_tdr_res;
-    echo "<table border='1' cellspacing='1' cellpadding='2' width='65%' align='center'>\n";
+    echo "<table border='1' cellspacing='1' cellpadding='2'>\n";
     echo "  <tr bgcolor='".$color_line2."'>\n";
     echo "    <td align='center' colspan='7'><strong><font color='white'>".$l_tdr_res."</font></strong></td>\n";
     echo "  </tr>\n";

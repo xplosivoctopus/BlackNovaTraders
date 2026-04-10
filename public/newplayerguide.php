@@ -172,7 +172,6 @@ if (empty($username))
 }
 else
 {
-    echo str_replace("[here]", "<a href='main.php" . $link . "'>" . $l->get('l_here') . "</a>", $l->get('l_global_mmenu'));
+    TEXT_GOTOMAIN('main.php' . $link);
 }
 include "footer.php"; ?>
-

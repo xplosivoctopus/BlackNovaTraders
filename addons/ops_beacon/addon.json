@@ -1,0 +1,9 @@
+{
+  "slug": "ops_beacon",
+  "name": "Ops Beacon",
+  "version": "1.0.0",
+  "author": "Codex",
+  "description": "Example addon that shows a small operations banner for logged-in players.",
+  "bootstrap": "bootstrap.php"
+}
+

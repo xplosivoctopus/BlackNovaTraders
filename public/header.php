@@ -47,5 +47,61 @@ if (!defined('BNT_HEADER_RENDERED'))
 <link rel="shortcut icon" href="images/bntfavicon.ico">
 <title><?php global $title; echo $title; ?></title>
 <link rel='stylesheet' type='text/css' href='templates/classic/styles/main.css'>
+<style>
+.bnt-motd {
+  width: min(1100px, calc(100% - 24px));
+  margin: 12px auto 16px;
+  border: 1px solid #785400;
+  background: linear-gradient(180deg, rgba(56, 29, 0, 0.94), rgba(18, 10, 0, 0.98));
+  box-shadow: 0 0 18px rgba(255, 178, 0, 0.18);
+}
+
+.bnt-motd__inner {
+  padding: 12px 16px 14px;
+  border-left: 4px solid #ffb200;
+}
+
+.bnt-motd__eyebrow {
+  color: #ffcc4d;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.bnt-motd__title {
+  margin: 0 0 8px;
+  color: #fff1b5;
+  font-size: 22px;
+}
+
+.bnt-motd__body {
+  color: #fff8e1;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.bnt-nav-actions {
+  margin: 18px 0 8px;
+}
+
+.bnt-nav-button {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid rgba(90, 185, 255, 0.35);
+  background: rgba(14, 35, 61, 0.92);
+  color: #eaf8ff;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.bnt-nav-button:hover {
+  background: rgba(29, 63, 105, 0.96);
+}
+</style>
+<?php bnt_render_addon_hook('page_head', array('page' => basename($_SERVER['PHP_SELF'] ?? ''))); ?>
 </head>
 <body class="<?php echo $body_class; ?>">
+<?php bnt_render_motd(); ?>
+<?php bnt_render_addon_hook('page_top', array('page' => basename($_SERVER['PHP_SELF'] ?? ''))); ?>
+<div class="bnt-page">

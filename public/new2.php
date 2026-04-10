@@ -87,6 +87,7 @@ $character = htmlspecialchars ($character);
 $shipname = htmlspecialchars ($shipname);
 $character = preg_replace ('/[^A-Za-z0-9\_\s\-\.\']+/', ' ', $character);
 $shipname = preg_replace ('/[^A-Za-z0-9\_\s\-\.\']+/', ' ', $shipname);
+$shipname = trim($shipname);
 
 // $username = $_POST['username']; // This needs to STAY before the db query
 
@@ -112,6 +113,12 @@ if ($password !== $password_confirm)
 if (strlen($password) < 8)
 {
     echo "Password must be at least 8 characters long.<br>";
+    $flag = 1;
+}
+
+if (strlen($shipname) > 25)
+{
+    echo "Ship name must be 25 characters or fewer.<br>";
     $flag = 1;
 }
 

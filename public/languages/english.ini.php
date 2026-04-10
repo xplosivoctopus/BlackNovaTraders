@@ -386,7 +386,7 @@ l_gns_bforbid                           = "The bases in this sector are interfer
 l_gns_pcreate                           = "Planet created.";
 
 [global_funcs]
-l_global_mmenu                          = "Click [here] to return to the main menu.";
+l_global_mmenu                          = "Return to the command center [here].";
 l_global_mlogin                         = "Click [here] to return to the login screen.";
 l_global_needlogin                      = "You need to log in, click [here].";
 l_global_died                           = "Player is DEAD! [here]'s what happened";
@@ -544,7 +544,7 @@ l_log_nopod                             = "You did not have an escape pod, you d
 l_log_log                               = "[player]'s Log";
 l_log_start                             = "Log entry for";
 l_log_end                               = "End of log entry for";
-l_log_click                             = "Click [here] to return to the main menu.";
+l_log_click                             = "Return to the command center [here].";
 l_log_note                              = "NOTE: If this page displays incorrectly, or if you simply don't like the dynamic html effects or find them annoying, you can [disable them].";
 l_log_note_disable                      = "disable them";
 l_log_text_LOG_LOGIN                    = "You have logged in, from [ip].";

@@ -365,8 +365,7 @@ if ($adminLogAccess)
 }
 else
 {
-    $l_log_click = str_replace("[here]", "<a href=main.php><font color=#00ff00>" . $l_here . "</font></a>", $l_log_click);
-    echo "<tr><td><td style='text-align:left;'><p style='font-size:2;'>$l_log_click</p></td></tr>";
+    echo "<tr><td><td style='text-align:left;'>" . bnt_nav_button_html('main.php', '< Dashboard') . "</td></tr>";
 }
 
 if ($mode != 'compat')

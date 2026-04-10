@@ -116,10 +116,11 @@ Table_Row("Creating traderoutes Table","Failed","Passed");
 
 $db->Execute("CREATE TABLE IF NOT EXISTS {$db->prefix}ships (" .
              "ship_id int unsigned NOT NULL auto_increment," .
-             "ship_name char(20)," .
+             "ship_name char(25)," .
              "ship_destroyed enum('Y','N') DEFAULT 'N' NOT NULL," .
              "character_name char(20) NOT NULL," .
              "password char(60) NOT NULL," .
+             "force_password_reset enum('Y','N') DEFAULT 'N' NOT NULL," .
              "email char(60) NOT NULL," .
              "hull tinyint(3) unsigned DEFAULT '0' NOT NULL," .
              "engines tinyint(3) unsigned DEFAULT '0' NOT NULL," .
@@ -182,6 +183,14 @@ $db->Execute("CREATE TABLE IF NOT EXISTS {$db->prefix}ships (" .
 $err = TRUEFALSE(0, $db->ErrorMsg(),"No errors found", $db->ErrorNo() . ": " . $db->ErrorMsg());
 
 Table_Row("Creating ships Table","Failed","Passed");
+
+// Add force_password_reset column to existing installations that pre-date it
+$_col = $db->Execute("SELECT COUNT(*) AS cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='{$db->prefix}ships' AND COLUMN_NAME='force_password_reset'");
+if ($_col && (int)$_col->fields['cnt'] === 0)
+{
+    $db->Execute("ALTER TABLE {$db->prefix}ships ADD COLUMN force_password_reset ENUM('Y','N') DEFAULT 'N' NOT NULL AFTER password");
+}
+unset($_col);
 
 $db->Execute("CREATE TABLE IF NOT EXISTS {$db->prefix}universe (" .
              "sector_id int unsigned NOT NULL auto_increment," .
@@ -291,10 +300,14 @@ $db->Execute("CREATE TABLE IF NOT EXISTS {$db->prefix}messages (" .
              "ID int NOT NULL auto_increment," .
              "sender_id int NOT NULL default '0'," .
              "recp_id int NOT NULL default '0'," .
+             "thread_key varchar(64) NOT NULL default ''," .
+             "reply_to_id int NULL," .
              "subject varchar(250) NOT NULL default ''," .
              "sent varchar(19) NULL," .
+             "last_reply_at varchar(19) NULL," .
              "message longtext NOT NULL," .
              "notified enum('Y','N') NOT NULL default 'N'," .
+             "read_at datetime NULL," .
              "PRIMARY KEY  (ID) " .
              ")");
 $err = TRUEFALSE(0, $db->ErrorMsg(),"No errors found", $db->ErrorNo() . ": " . $db->ErrorMsg());

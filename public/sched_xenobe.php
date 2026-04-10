@@ -23,9 +23,6 @@ if (preg_match("/sched_xenobe.php/i", $_SERVER['PHP_SELF']))
     die();
 }
 
-// Xenobe turn updates
-echo "<br><strong>Xenobe TURNS</strong><br><br>";
-
 // Include functions
 include_once "includes/xenobe_hunter.php";
 include_once "includes/xenobe_move.php";
@@ -278,17 +275,6 @@ while (!$res->EOF)
     $res->MoveNext();
   }
   $res->_close();
-
-  $furnonmove = $furcount - ($furcount0 + $furcount1 + $furcount2 + $furcount3);
-  echo "Counted $furcount Xenobe players that are ACTIVE with working ships.<br>";
-  echo "$furnonmove Xenobe players did not do anything this round. <br>";
-  echo "$furcount0 Xenobe players had SENTINEL orders of which $furcount0a launched attacks. <br>";
-  echo "$furcount1 Xenobe players had ROAM orders of which $furcount1a launched attacks. <br>";
-  echo "$furcount2 Xenobe players had ROAM AND TRADE orders of which $furcount2a launched attacks. <br>";
-  echo "$furcount3 Xenobe players had ROAM AND HUNT orders of which $furcount3a launched attacks and $furcount3h went hunting. <br>";
-  echo "Xenobe TURNS COMPLETE. <br>";
-  echo "<br>";
-  // END OF Xenobe TURNS
 
 // Unlock the tables.
 $result = $db->Execute("UNLOCK TABLES;");

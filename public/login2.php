@@ -110,6 +110,15 @@ if ($playerfound)
             $_SESSION['logged_in'] = true;
             $_SESSION['username'] = $playerinfo['email'];
             bnt_set_login_cookie($playerinfo['email']);
+
+            // Admin-requested forced password reset
+            if (($playerinfo['force_password_reset'] ?? 'N') === 'Y')
+            {
+                $_SESSION['force_password_reset'] = true;
+                header("Location: forced_reset.php");
+                exit;
+            }
+
             TEXT_GOTOMAIN();
             header("Location: main.php"); // This redirect avoids any rendering for the user of login2. Its a direct transition, visually
             exit;

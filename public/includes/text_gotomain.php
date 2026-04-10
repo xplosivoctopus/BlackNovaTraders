@@ -22,9 +22,16 @@ if (preg_match("/text_gotomain.php/i", $_SERVER['PHP_SELF'])) {
       die();
 }
 
-function TEXT_GOTOMAIN ()
+if (!function_exists('bnt_nav_button_html'))
 {
-    global $l; // The language object
-    echo str_replace("[here]", "<a href='main.php'>" . $l->get('l_here') . "</a>", $l->get('l_global_mmenu'));
+    function bnt_nav_button_html(string $href, string $label): string
+    {
+        return "<div class='bnt-nav-actions'><a class='bnt-nav-button' href='" . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . "</a></div>";
+    }
+}
+
+function TEXT_GOTOMAIN (string $href = 'main.php', string $label = '< Dashboard')
+{
+    echo bnt_nav_button_html($href, $label);
 }
 ?>

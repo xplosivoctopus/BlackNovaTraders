@@ -163,16 +163,19 @@ $ply_turnsused = NUMBER($playerinfo['turns_used']);
 $ply_score     = NUMBER($playerinfo['score']);
 $ply_credits   = NUMBER($playerinfo['credits']);
 
-// Unread message check
-$result = $db->Execute("SELECT * FROM {$db->prefix}messages WHERE recp_id=? AND notified=?;", array($playerinfo['ship_id'], "N") );
-db_op_result ($db, $result, __LINE__, __FILE__, $db_logging);
-$unread_msgs = 0;
-$alert_message = '';
-if ($result->RecordCount() > 0) {
-    $unread_msgs = $result->RecordCount();
-    $alert_message = "{$l->get('l_youhave')} {$unread_msgs}{$l->get('l_messages_wait')}";
-    $res = $db->Execute("UPDATE {$db->prefix}messages SET notified='Y' WHERE recp_id=?;", array($playerinfo['ship_id']));
-    db_op_result ($db, $res, __LINE__, __FILE__, $db_logging);
+// Unified notifications summary
+$notification_counts = bnt_get_notification_counts((int) $playerinfo['ship_id']);
+$notification_total = (int) ($notification_counts['total'] ?? 0);
+$notification_summary = '';
+if ($notification_total > 0) {
+    $notification_parts = array();
+    if (!empty($notification_counts['messages'])) {
+        $notification_parts[] = (int) $notification_counts['messages'] . ' message' . (((int) $notification_counts['messages'] === 1) ? '' : 's');
+    }
+    if (!empty($notification_counts['activity'])) {
+        $notification_parts[] = (int) $notification_counts['activity'] . ' activity update' . (((int) $notification_counts['activity'] === 1) ? '' : 's');
+    }
+    $notification_summary = implode(' and ', $notification_parts);
 }
 
 // Trade routes queries
@@ -248,6 +251,7 @@ if ($playerinfo['sector'] != 0) {
 .ck-hud {
   display: flex;
   align-items: stretch;
+  flex-wrap: wrap;
   background: linear-gradient(90deg, rgba(2,8,18,0.99), rgba(6,18,30,0.99));
   border: 1px solid var(--border-mid);
   border-top: 2px solid var(--cyan);
@@ -273,6 +277,7 @@ if ($playerinfo['sector'] != 0) {
 .ck-hud-identity {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
   padding: 8px 16px;
   flex: 1;
@@ -314,7 +319,11 @@ if ($playerinfo['sector'] != 0) {
   color: var(--cyan);
   text-decoration: none;
   letter-spacing: 0.08em;
-  white-space: nowrap;
+  flex: 1 1 220px;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
   transition: color 0.2s, text-shadow 0.2s;
 }
 
@@ -371,6 +380,58 @@ if ($playerinfo['sector'] != 0) {
   align-items: center;
   gap: 12px;
   padding: 6px 16px;
+}
+
+.ck-hud-cargo {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px 14px 10px;
+  border-top: 1px solid var(--border);
+  background: rgba(0, 238, 255, 0.03);
+}
+
+.ck-hud-cargo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 8px;
+  background: rgba(4, 18, 34, 0.72);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.ck-hud-cargo-item img {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.ck-hud-cargo-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.ck-hud-cargo-lbl {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #cfe7f5;
+  font-weight: 600;
+}
+
+.ck-hud-cargo-val {
+  display: block;
+  font-family: var(--font-hud);
+  font-size: 11px;
+  color: var(--text-prime);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ck-loc-item { display: flex; flex-direction: column; align-items: center; }
@@ -443,6 +504,12 @@ if ($playerinfo['sector'] != 0) {
   grid-template-columns: 188px 1fr 196px;
   gap: 6px;
   align-items: start;
+}
+
+.ck-side-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 /* ── Panel Base ──────────────────────────────────────────── */
@@ -588,55 +655,6 @@ if ($playerinfo['sector'] != 0) {
 
 .ck-obj-none { font-size:10px; color:var(--text-muted); font-style:italic; padding:2px 0 4px; }
 
-/* ── Center: Cargo Strip ─────────────────────────────────── */
-.ck-cargo-strip {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.ck-cargo-card {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 52px;
-  padding: 8px 10px;
-  background: rgba(4, 18, 34, 0.78);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
-}
-.ck-cargo-card:hover {
-  border-color: var(--border-mid);
-  background: rgba(6, 23, 38, 0.92);
-}
-.ck-cargo-icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  opacity: 0.9;
-}
-.ck-cargo-copy {
-  min-width: 0;
-  flex: 1;
-}
-.ck-cargo-lbl {
-  display: block;
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-}
-.ck-cargo-val {
-  display: block;
-  font-family: var(--font-hud);
-  font-size: 11px;
-  color: var(--text-prime);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 /* ── Right: Nav Computer ─────────────────────────────────── */
 .ck-nav-row { display:flex; align-items:center; justify-content:space-between; padding:3px 8px 3px 10px; gap:5px; }
 .ck-nav-dest { font-family:var(--font-hud); font-size:11.5px; color:var(--cyan); text-decoration:none; transition:color 0.15s, text-shadow 0.15s; }
@@ -654,10 +672,10 @@ if ($playerinfo['sector'] != 0) {
 .ck-fullscan { display:block; padding:5px 10px; font-size:10px; color:var(--violet); text-decoration:none; border-top:1px solid var(--border); transition:background 0.15s, color 0.15s; }
 .ck-fullscan:hover { background:var(--violet-dim); color:#fff; }
 @media (max-width: 1100px) {
-  .ck-cargo-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ck-hud-cargo { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 720px) {
-  .ck-cargo-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ck-hud-cargo { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 </style>
 
@@ -702,10 +720,29 @@ if ($sectorinfo['beacon']) {
 }
 echo "    <a class='ck-zone-link new_link' href='zoneinfo.php?zone={$zoneinfo['zone_id']}' data-modal-fetch='1' data-modal-title='" . htmlspecialchars($zoneinfo['zone_name']) . "'>" . htmlspecialchars($zoneinfo['zone_name']) . "</a>\n";
 echo "  </div>\n";
+echo "  <div class='ck-hud-cargo'>\n";
+$cargo_items = [
+    [$l->get('l_ore'),       'ore.png',       'ship_ore'],
+    [$l->get('l_organics'),  'organics.png',  'ship_organics'],
+    [$l->get('l_goods'),     'goods.png',     'ship_goods'],
+    [$l->get('l_energy'),    'energy.png',    'ship_energy'],
+    [$l->get('l_colonists'), 'colonists.png', 'ship_colonists'],
+];
+foreach ($cargo_items as [$clbl, $cicon, $cfield]) {
+    $cval = NUMBER($playerinfo[$cfield]);
+    echo "    <div class='ck-hud-cargo-item'>\n";
+    echo "      <img src='images/{$cicon}' alt='" . htmlspecialchars($clbl) . "'>\n";
+    echo "      <div class='ck-hud-cargo-copy'>\n";
+    echo "        <span class='ck-hud-cargo-lbl'>{$clbl}</span>\n";
+    echo "        <span class='ck-hud-cargo-val'>{$cval}</span>\n";
+    echo "      </div>\n";
+    echo "    </div>\n";
+}
+echo "  </div>\n";
 echo "</div>\n"; // end ck-hud
 
-if ($unread_msgs > 0) {
-    echo "<div class='ck-msg-alert'>&#9888; {$alert_message} &mdash; <a href='readmail.php'>" . $l->get('l_read_msg') . "</a></div>\n";
+if ($notification_total > 0) {
+    echo "<div class='ck-msg-alert'>&#9888; You have {$notification_summary} waiting &mdash; <a href='notifications.php'>Open Notifications</a></div>\n";
 }
 
 // ── COCKPIT GRID ─────────────────────────────────────────────────────
@@ -714,6 +751,7 @@ echo "<div class='ck-grid'>\n";
 // ======================================================
 // LEFT PANEL — TACTICAL SYSTEMS
 // ======================================================
+echo "<div class='ck-side-stack'>\n";
 echo "<div class='ck-panel'>\n";
 echo "  <div class='ck-sec'>" . $l->get('l_commands') . "</div>\n";
 echo "  <nav class='ck-nav'>\n";
@@ -721,19 +759,42 @@ echo "    <a class='ck-cmd' href='device.php'>" . $l->get('l_devices') . "</a>\n
 echo "    <a class='ck-cmd' href='planet_report.php'>" . $l->get('l_planets') . "</a>\n";
 echo "    <a class='ck-cmd' href='log.php'>" . $l->get('l_log') . "</a>\n";
 echo "    <a class='ck-cmd' href='defence_report.php'>" . $l->get('l_sector_def') . "</a>\n";
-echo "    <a class='ck-cmd' href='readmail.php'>" . $l->get('l_read_msg') . "</a>\n";
-echo "    <a class='ck-cmd' href='mailto2.php'>" . $l->get('l_send_msg') . "</a>\n";
 echo "    <a class='ck-cmd' href='ranking.php'>" . $l->get('l_rankings') . "</a>\n";
-echo "    <a class='ck-cmd' href='settings.php'>" . $l->get('l_settings') . "</a>\n";
 echo "    <a class='ck-cmd' href='teams.php'>" . $l->get('l_teams') . "</a>\n";
-echo "    <a class='ck-cmd' href='options.php'>" . $l->get('l_options') . "</a>\n";
 echo "    <a class='ck-cmd' href='navcomp.php'>" . $l->get('l_navcomp') . "</a>\n";
 if ($ksm_allowed == true) {
     echo "    <a class='ck-cmd' href='galaxy.php'>" . $l->get('l_map') . "</a>\n";
 }
 echo "  </nav>\n";
+echo "</div>\n";
 
-echo "  <div class='ck-divider'></div>\n";
+echo "<div class='ck-panel'>\n";
+echo "  <div class='ck-sec'>PERSONAL</div>\n";
+echo "  <nav class='ck-nav'>\n";
+echo "    <a class='ck-cmd' href='profile.php?ship_id=" . (int) $playerinfo['ship_id'] . "'>Profile</a>\n";
+echo "    <a class='ck-cmd' href='options.php'>Edit Profile</a>\n";
+echo "    <a class='ck-cmd' href='notifications.php'>Notifications" . ($notification_total > 0 ? " ({$notification_total})" : "") . "</a>\n";
+echo "    <a class='ck-cmd' href='contacts.php'>Contacts</a>\n";
+echo "    <a class='ck-cmd' href='readmail.php'>" . $l->get('l_read_msg') . "</a>\n";
+echo "    <a class='ck-cmd' href='mailto2.php'>" . $l->get('l_send_msg') . "</a>\n";
+echo "    <a class='ck-cmd' href='settings.php'>" . $l->get('l_settings') . "</a>\n";
+echo "    <a class='ck-cmd' href='options.php'>" . $l->get('l_options') . "</a>\n";
+echo "  </nav>\n";
+echo "</div>\n";
+
+$playerAddonLinks = bnt_get_addon_nav_links('player');
+if (!empty($playerAddonLinks)) {
+    echo "<div class='ck-panel'>\n";
+    echo "  <div class='ck-sec'>ADDONS</div>\n";
+    echo "  <nav class='ck-nav'>\n";
+    foreach ($playerAddonLinks as $addonLink) {
+        echo "    <a class='ck-cmd' href='" . htmlspecialchars((string) $addonLink['url'], ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars((string) $addonLink['label'], ENT_QUOTES, 'UTF-8') . "</a>\n";
+    }
+    echo "  </nav>\n";
+    echo "</div>\n";
+}
+
+echo "<div class='ck-panel'>\n";
 echo "  <div class='ck-sec'>INFO &amp; SUPPORT</div>\n";
 echo "  <nav class='ck-nav'>\n";
 echo "    <a class='ck-cmd' href='faq.php'>" . $l->get('l_faq') . "</a>\n";
@@ -742,22 +803,9 @@ if (!empty($link_forums)) {
     echo "    <a class='ck-cmd' href='" . htmlspecialchars($link_forums) . "'>" . $l->get('l_forums') . "</a>\n";
 }
 echo "  </nav>\n";
+echo "</div>\n";
 
-if ($isAdminUser) {
-    echo "  <div class='ck-divider'></div>\n";
-    echo "  <div class='ck-sec'>ADMIN</div>\n";
-    echo "  <nav class='ck-nav'>\n";
-    echo "    <a class='ck-cmd' href='admin.php'>Administration</a>\n";
-    echo "    <a class='ck-cmd' href='setup_info.php'>Setup Info</a>\n";
-    echo "    <a class='ck-cmd' href='scheduler.php'>Run Scheduler</a>\n";
-    echo "    <a class='ck-cmd' href='perfmon.php'>Performance Monitor</a>\n";
-    echo "    <a class='ck-cmd' href='ngai_control.php'>NGAI Control</a>\n";
-    echo "    <a class='ck-cmd' href='xenobe_control.php'>Xenobe Control</a>\n";
-    echo "    <a class='ck-cmd ck-cmd-danger' href='create_universe.php'>Universe Creation</a>\n";
-    echo "  </nav>\n";
-}
-
-echo "  <div class='ck-divider'></div>\n";
+echo "<div class='ck-panel'>\n";
 echo "  <div class='ck-sec'>" . $l->get('l_traderoutes') . "</div>\n";
 
 if ($num_traderoutes == 0) {
@@ -798,38 +846,20 @@ if ($num_traderoutes == 0) {
 }
 
 echo "  <a class='ck-cmd' href='traderoute.php'>" . $l->get('l_trade_control') . "</a>\n";
-echo "  <div class='ck-divider'></div>\n";
+echo "</div>\n";
+
+echo "<div class='ck-panel'>\n";
 echo "  <nav class='ck-nav'>\n";
 echo "    <a class='ck-cmd ck-cmd-danger' href='self_destruct.php'>" . $l->get('l_ohno') . "</a>\n";
 echo "    <a class='ck-cmd ck-cmd-danger' href='logout.php'>" . $l->get('l_logout') . "</a>\n";
 echo "  </nav>\n";
-echo "</div>\n"; // end left panel
+echo "</div>\n";
+echo "</div>\n"; // end left column
 
 // ======================================================
 // CENTER PANEL — SECTOR VIEW
 // ======================================================
 echo "<div class='ck-panel'>\n";
-
-echo "  <div class='ck-sec'>" . $l->get('l_cargo') . "</div>\n";
-echo "  <div class='ck-cargo-strip'>\n";
-$cargo_items = [
-    [$l->get('l_ore'),       'ore.png',       'ship_ore'],
-    [$l->get('l_organics'),  'organics.png',  'ship_organics'],
-    [$l->get('l_goods'),     'goods.png',     'ship_goods'],
-    [$l->get('l_energy'),    'energy.png',    'ship_energy'],
-    [$l->get('l_colonists'), 'colonists.png', 'ship_colonists'],
-];
-foreach ($cargo_items as [$clbl, $cicon, $cfield]) {
-    $cval = NUMBER($playerinfo[$cfield]);
-    echo "    <div class='ck-cargo-card'>\n";
-    echo "      <img class='ck-cargo-icon' src='images/{$cicon}' alt='" . htmlspecialchars($clbl) . "'>\n";
-    echo "      <div class='ck-cargo-copy'>\n";
-    echo "        <span class='ck-cargo-lbl'>{$clbl}</span>\n";
-    echo "        <span class='ck-cargo-val'>{$cval}</span>\n";
-    echo "      </div>\n";
-    echo "    </div>\n";
-}
-echo "  </div>\n";
 
 if ($sectorinfo['port_type'] != "none" && strlen($sectorinfo['port_type']) > 0) {
     echo "  <div class='ck-port'>\n";
@@ -947,11 +977,10 @@ if ($num_defences > 0) {
 echo "</div>\n"; // end center panel
 
 // ======================================================
-// RIGHT PANEL — SHIP SYSTEMS
+// RIGHT COLUMN — NAV + ADMIN
 // ======================================================
+echo "<div class='ck-side-stack'>\n";
 echo "<div class='ck-panel'>\n";
-
-echo "  <div class='ck-divider'></div>\n";
 echo "  <div class='ck-sec'>" . $l->get('l_realspace') . "</div>\n";
 foreach ([1, 2, 3] as $pn) {
     $pd = $playerinfo["preset{$pn}"];
@@ -961,8 +990,9 @@ foreach ([1, 2, 3] as $pn) {
     echo "  </div>\n";
 }
 echo "  <a class='ck-cmd' href='rsmove.php'>=&gt; " . $l->get('l_main_other') . "</a>\n";
+echo "</div>\n";
 
-echo "  <div class='ck-divider'></div>\n";
+echo "<div class='ck-panel'>\n";
 echo "  <div class='ck-sec'>" . $l->get('l_main_warpto') . "</div>\n";
 if (!$num_links) {
     echo "  <span class='ck-warp-none'>" . $l->get('l_no_warplink') . "</span>\n";
@@ -975,8 +1005,30 @@ if (!$num_links) {
     }
 }
 echo "  <a class='ck-fullscan dis' href='lrscan.php?sector=*' data-modal-fetch='1' data-modal-title='" . $l->get('l_fullscan') . "' data-refresh-on-close='1'>[" . $l->get('l_fullscan') . "]</a>\n";
-
 echo "</div>\n"; // end right panel
+if ($isAdminUser) {
+    echo "<div class='ck-panel'>\n";
+    echo "  <div class='ck-sec'>ADMIN CONSOLE</div>\n";
+    echo "  <nav class='ck-nav'>\n";
+    echo "    <a class='ck-cmd' href='admin.php'>Dashboard</a>\n";
+    echo "    <a class='ck-cmd' href='setup_info.php'>Setup Info</a>\n";
+    echo "    <a class='ck-cmd' href='scheduler.php'>Scheduler</a>\n";
+    echo "    <a class='ck-cmd' href='perfmon.php'>Performance Monitor</a>\n";
+    echo "    <a class='ck-cmd' href='ngai_control.php'>NGAI Control</a>\n";
+    echo "    <a class='ck-cmd' href='xenobe_control.php'>Xenobe Control</a>\n";
+    echo "    <a class='ck-cmd ck-cmd-danger' href='create_universe.php'>Universe Creation</a>\n";
+    $adminAddonLinks = bnt_get_addon_nav_links('admin');
+    if (!empty($adminAddonLinks)) {
+        echo "    <div class='ck-divider'></div>\n";
+        echo "    <div class='ck-sec'>ADDON TOOLS</div>\n";
+        foreach ($adminAddonLinks as $addonLink) {
+            echo "    <a class='ck-cmd' href='" . htmlspecialchars((string) $addonLink['url'], ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars((string) $addonLink['label'], ENT_QUOTES, 'UTF-8') . "</a>\n";
+        }
+    }
+    echo "  </nav>\n";
+    echo "</div>\n";
+}
+echo "</div>\n"; // end right column
 echo "</div>\n"; // end ck-grid
 echo "</div>\n"; // end ck-wrap
 

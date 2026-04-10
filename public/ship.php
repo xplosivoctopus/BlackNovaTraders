@@ -51,6 +51,7 @@ else
 	$_SESSION['ship_selected'] = $ship_id;
     echo "$l_ship_youc <font color=white>" . $othership['ship_name'] . "</font>, $l_ship_owned <font color=white>" . $othership['character_name'] . "</font>.<br><br>";
     echo "$l_ship_perform<br><br>";
+    echo "<a href=profile.php?ship_id=$ship_id>View pilot profile</a><br>";
     echo "<a href=scan.php?ship_id=$ship_id>$l_planet_scn_link</a><br>";
 
     if ( !is_same_team($playerinfo['team'], $othership['team']) )

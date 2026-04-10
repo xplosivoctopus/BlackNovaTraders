@@ -82,7 +82,7 @@ else
     $by="score DESC,character_name ASC";
 }
 
-$res = $db->Execute("SELECT {$db->prefix}ships.email,{$db->prefix}ships.score,{$db->prefix}ships.character_name,{$db->prefix}ships.turns_used,{$db->prefix}ships.last_login,UNIX_TIMESTAMP({$db->prefix}ships.last_login) as online,{$db->prefix}ships.rating, {$db->prefix}teams.team_name, if ({$db->prefix}ships.turns_used<150,0,ROUND({$db->prefix}ships.score/{$db->prefix}ships.turns_used)) AS efficiency FROM {$db->prefix}ships LEFT JOIN {$db->prefix}teams ON {$db->prefix}ships.team = {$db->prefix}teams.id  WHERE ship_destroyed='N' and email NOT LIKE '%@xenobe' AND turns_used >0 ORDER BY $by LIMIT $max_ranks");
+$res = $db->Execute("SELECT {$db->prefix}ships.ship_id, {$db->prefix}ships.email,{$db->prefix}ships.score,{$db->prefix}ships.character_name,{$db->prefix}ships.turns_used,{$db->prefix}ships.last_login,UNIX_TIMESTAMP({$db->prefix}ships.last_login) as online,{$db->prefix}ships.rating, {$db->prefix}teams.team_name, if ({$db->prefix}ships.turns_used<150,0,ROUND({$db->prefix}ships.score/{$db->prefix}ships.turns_used)) AS efficiency FROM {$db->prefix}ships LEFT JOIN {$db->prefix}teams ON {$db->prefix}ships.team = {$db->prefix}teams.id  WHERE ship_destroyed='N' and email NOT LIKE '%@xenobe' AND turns_used >0 ORDER BY $by LIMIT $max_ranks");
 db_op_result ($db, $res, __LINE__, __FILE__, $db_logging);
 
 if (!$res)
@@ -139,7 +139,7 @@ else
         echo "&nbsp;";
         echo player_insignia_name ($db, $row['email']);
         echo "&nbsp;";
-        echo "<strong>$row[character_name]</strong></td><td>" . NUMBER($row['turns_used']) . "</td><td>$row[last_login]</td><td>&nbsp;&nbsp;" . NUMBER($rating) . "</td><td>$row[team_name]&nbsp;</td><td>$online</td><td>$row[efficiency]</td></tr>\n";
+        echo "<strong><a class='new_link' href='profile.php?ship_id=" . (int) $row['ship_id'] . "'>$row[character_name]</a></strong></td><td>" . NUMBER($row['turns_used']) . "</td><td>$row[last_login]</td><td>&nbsp;&nbsp;" . NUMBER($rating) . "</td><td>$row[team_name]&nbsp;</td><td>$online</td><td>$row[efficiency]</td></tr>\n";
         if ($color == $color_line1)
         {
             $color = $color_line2;
@@ -172,7 +172,7 @@ if (empty($username))
 }
 else
 {
-    echo str_replace("[here]", "<a href='main.php" . $link_back . "'>" . $l->get('l_here') . "</a>", $l->get('l_global_mmenu'));
+    TEXT_GOTOMAIN('main.php' . $link_back);
 }
 
 include "footer.php";

@@ -23,8 +23,6 @@ if (preg_match("/sched_tow.php/i", $_SERVER['PHP_SELF']))
     die();
 }
 
-echo "<strong>ZONES</strong><br><br>";
-echo "Towing bigger players out of restricted zones...";
 $num_to_tow = 0;
 do
 {
@@ -33,13 +31,10 @@ do
     if ($res)
     {
         $num_to_tow = $res->RecordCount();
-        echo "<br>$num_to_tow players to tow:<br>";
         while (!$res->EOF)
         {
             $row = $res->fields;
-            echo "...towing $row[character_name] out of $row[sector] ...";
             $newsector = mt_rand(0, $sector_max-1);
-            echo " to sector $newsector.<br>";
             $query = $db->Execute("UPDATE {$db->prefix}ships SET sector=$newsector,cleared_defences=' ' WHERE ship_id=$row[ship_id]");
             db_op_result ($db, $query, __LINE__, __FILE__, $db_logging);
             playerlog ($db, $row['ship_id'], LOG_TOW, "$row[sector]|$newsector|$row[max_hull]");
@@ -47,12 +42,7 @@ do
             $res->MoveNext();
         }
     }
-    else
-    {
-        echo "<br>No players to tow.<br>";
-    }
 } while ($num_to_tow);
 
-echo "<br>";
 $multiplier = 0; // No need to run this again
 ?>

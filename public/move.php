@@ -97,7 +97,11 @@ if ($flag == 1)
         {
             // is this really STILL needed?
             $error = $db->ErrorMsg();
-            mail ($admin_mail,"Move Error", "Start Sector: $sectorinfo[sector_id]\nEnd Sector: $sector\nPlayer: $playerinfo[character_name] - $playerinfo[ship_id]\n\nQuery:  $query\n\nSQL error: $error");
+            bnt_send_email(
+                (string) $admin_mail,
+                "Move Error",
+                "Start Sector: $sectorinfo[sector_id]\nEnd Sector: $sector\nPlayer: $playerinfo[character_name] - $playerinfo[ship_id]\n\nQuery:  $query\n\nSQL error: $error"
+            );
         }
     }
     // Enter code for checking dangers in new sector

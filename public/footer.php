@@ -107,7 +107,9 @@ if ($footer_show_debug == true)
 {
     echo "<div style='font-size:smaller; text-align:right'>" . number_format($elapsed,2) . " " . $l->get('l_seconds') . " " . $l->get('l_time_gen_page') ." / " . floor(memory_get_peak_usage() / 1024) . $l->get('l_peak_mem') . "</div>";
 }
+bnt_render_addon_hook('page_footer', array('page' => basename($_SERVER['PHP_SELF'] ?? '')));
 ?>
+</div><!-- /.bnt-page -->
 </body>
 </html>
 <?php

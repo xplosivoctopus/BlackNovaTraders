@@ -26,11 +26,8 @@ if (preg_match("/sched_igb.php/i", $_SERVER['PHP_SELF']))
 $exponinter = pow ($ibank_interest + 1, $multiplier);
 $expoloan = pow ($ibank_loaninterest + 1, $multiplier);
 
-echo "<strong>IBANK</strong><p>";
-
 $ibank_result = $db->Execute("UPDATE {$db->prefix}ibank_accounts SET balance=balance * $exponinter, loan=loan * $expoloan");
 db_op_result ($db, $ibank_result, __LINE__, __FILE__, $db_logging);
-echo "All IGB accounts updated ($multiplier times).<p>";
 
 $multiplier = 0;
 ?>

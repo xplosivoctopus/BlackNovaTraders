@@ -386,7 +386,7 @@ l_gns_bforbid                           = "Les bases dans se secteur interferent
 l_gns_pcreate                           = "Une nouvelle planète est créée.";
 
 [global_funcs]
-l_global_mmenu                          = "Cliquez [here] pour retourner au menu principal.";
+l_global_mmenu                          = "Retournez au centre de commandement [here].";
 l_global_mlogin                         = "Cliquez [here] pour retourner à l'écran de connection.";
 l_global_needlogin                      = "Vous devez vous connecter, cliquez [here].";
 l_global_died                           = "Vous êtes mort! [here] ce qui vous est arrivé";
@@ -544,7 +544,7 @@ l_log_nopod                             = "Vous n'aviez pas de module de secours
 l_log_log                               = "Journal de [player]";
 l_log_start                             = "Entrées pour";
 l_log_end                               = "Fin des entrées pour";
-l_log_click                             = "Cliquez [here] pour retourner au menu principal.";
+l_log_click                             = "Retournez au centre de commandement [here].";
 l_log_note                              = "NOTE: Si cette page ne s'affiche pas correctement, ou si vous n'aimez pas les effets de HTML dynamique ou vous les trouvez agaçants, vous pouvez les désactiver [here]";
 l_log_note_disable                      = "disable them";
 l_log_text_LOG_LOGIN                    = "Vous vous êtes connecté, à partir de [ip].";

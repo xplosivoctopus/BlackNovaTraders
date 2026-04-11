@@ -40,9 +40,12 @@ if (!in_array($filter, $allowedFilters, true)) {
     $filter = 'all';
 }
 
+if ($filter === 'all') {
+    bnt_mark_notifications_viewed($shipId);
+}
+
 $counts = bnt_get_notification_counts($shipId);
 $items = bnt_get_recent_notifications($shipId, 50, $filter);
-bnt_mark_notifications_viewed($shipId);
 
 include "header.php";
 
@@ -256,4 +259,3 @@ echo "</div>";
 
 TEXT_GOTOMAIN();
 include "footer.php";
-

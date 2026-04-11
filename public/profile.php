@@ -34,7 +34,7 @@ $viewer = $viewerRes->fields;
 
 $profileShipId = (int) ($_GET['ship_id'] ?? 0);
 $profileName = trim((string) ($_GET['name'] ?? ''));
-$rankedPlayerSql = bnt_rankings_base_player_sql();
+$rankedPlayerSql = bnt_rankings_base_player_sql(false);
 
 if ($profileShipId > 0) {
     $profileRes = $db->Execute(
@@ -127,7 +127,7 @@ if (!empty($techStats)) {
 }
 
 $rankRes = $db->Execute(
-    "SELECT COUNT(*) + 1 AS rank_position FROM ({$rankedPlayerSql}) ranked_players WHERE ranked_players.raw_asset_value > ?",
+    "SELECT COUNT(*) + 1 AS rank_position FROM (" . bnt_rankings_base_player_sql(true) . ") ranked_players WHERE ranked_players.raw_asset_value > ?",
     array($profile['raw_asset_value'])
 );
 db_op_result($db, $rankRes, __LINE__, __FILE__, $db_logging);

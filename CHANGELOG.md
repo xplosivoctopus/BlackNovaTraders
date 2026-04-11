@@ -9,6 +9,7 @@ This changelog is organized by project state and change area rather than by date
 ### Security
 
 - Enforced server-side CSRF validation for all `POST` submissions to `public/port2.php`, closing the commodity-trading write path that previously accepted missing or invalid CSRF tokens.
+- Removed public access to sensitive admin and server configuration in `public/settings.php`; non-admin players now see only a minimal public game-info view instead of admin identities, addon internals, operational settings, or filesystem paths.
 - Removed the legacy request-to-variable bootstrap shim from `public/global_cleanups.php` so `GET`/`POST`/`COOKIE` keys no longer become ambient local variables across the app.
 - Reworked `public/teams.php` team sorting to use explicit request parsing and an allowlisted sort map instead of concatenating request-populated values into SQL.
 - Added explicit request initialization to legacy pages that previously relied on ambient `$sort`, `$order`, `$type`, `$action`, or related request variables, including `public/admin.php`, `public/corp.php`, `public/create_universe.php`, `public/defence_report.php`, `public/log.php`, `public/ngai_control.php`, `public/planet_report.php`, `public/team_planets.php`, and `public/xenobe_control.php`.
@@ -95,6 +96,9 @@ This changelog is organized by project state and change area rather than by date
 
 - Reworked leaderboard and score calculations so rankings better reflect live game state rather than stale or misleading cached values.
 - Reworked ranking balance and leaderboard integrity so standings better reflect live net worth, bounty state, and reputation data.
+- Fixed dashboard/profile ranking data mismatches so zero-turn players still show correct live score and liquid wealth without being incorrectly inserted into ranked standings.
+- Fixed the reputation boards in `public/ranking.php` so `Most Honored` only shows positive-reputation pilots and `Most Notorious` only shows negative-reputation pilots.
+- Fixed notification read-state handling in `public/notifications.php` so the default notification view updates unread counters before rendering the page.
 - Added `public/includes/rankings.php`.
 - Changed ranking-related logic in:
   - `public/ranking.php`

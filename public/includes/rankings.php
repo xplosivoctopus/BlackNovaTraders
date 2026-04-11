@@ -104,7 +104,7 @@ function bnt_get_rankings_sql_parts(): array
     );
 }
 
-function bnt_rankings_base_player_sql(): string
+function bnt_rankings_base_player_sql(bool $requireTurnsUsed = true): string
 {
     global $db;
 
@@ -114,7 +114,7 @@ function bnt_rankings_base_player_sql(): string
     $liquidWealth = $parts['liquid_wealth'];
     $planetAggregateSql = $parts['planet_aggregate_sql'];
 
-    return "SELECT s.ship_id,
+    $sql = "SELECT s.ship_id,
                    s.email,
                    s.character_name,
                    s.ship_name,
@@ -148,21 +148,36 @@ function bnt_rankings_base_player_sql(): string
              GROUP BY bounty_on
          ) bt ON bt.bounty_on = s.ship_id
              WHERE s.ship_destroyed='N'
-               AND s.email NOT LIKE '%@xenobe'
-               AND s.turns_used > 0";
+               AND s.email NOT LIKE '%@xenobe'";
+
+    if ($requireTurnsUsed) {
+        $sql .= " AND s.turns_used > 0";
+    }
+
+    return $sql;
+}
+
+function bnt_get_ranked_player_row(int $shipId, bool $requireTurnsUsed = true): ?array
+{
+    global $db;
+
+    $sql = bnt_rankings_base_player_sql($requireTurnsUsed) . " AND s.ship_id=? LIMIT 1";
+    $res = $db->Execute($sql, array($shipId));
+    if (!$res || $res->EOF) {
+        return null;
+    }
+
+    return $res->fields;
 }
 
 function bnt_get_live_score_value(int $shipId): int
 {
-    global $db;
-
-    $sql = bnt_rankings_base_player_sql() . " AND s.ship_id=? LIMIT 1";
-    $res = $db->Execute($sql, array($shipId));
-    if (!$res || $res->EOF) {
+    $row = bnt_get_ranked_player_row($shipId);
+    if ($row === null) {
         return 0;
     }
 
-    return (int) $res->fields['live_score'];
+    return (int) $row['live_score'];
 }
 
 function bnt_refresh_score(int $shipId): int

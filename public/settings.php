@@ -36,6 +36,28 @@ load_languages($db, $lang, array('settings', 'common', 'global_includes', 'globa
 
 include "header.php";
 
+$viewer = bnt_get_current_playerinfo();
+$isAdminViewer = bnt_is_admin_user($viewer);
+
+if (!$isAdminViewer)
+{
+    $title = "Game Information";
+    bigtitle();
+    echo "<div style='width:min(900px, calc(100% - 24px)); margin:16px auto 28px; color:#dbefff;'>";
+    echo "<div style='border:1px solid rgba(0,238,255,0.16); background:rgba(4,14,26,0.82); padding:18px; margin-bottom:16px;'>";
+    echo "<h2 style='margin:0 0 10px; color:#eefbff;'>Game Information</h2>";
+    echo "<p style='margin:0; line-height:1.6; color:rgba(220,238,248,0.9);'>Administrative and server configuration details are restricted. This page no longer exposes admin identities, addon internals, filesystem paths, or operational settings to public players.</p>";
+    echo "</div>";
+    echo "<table style='width:100%; font-size:14px; color:#fff; border:#fff 1px solid;' border='0' cellspacing='0' cellpadding='2'>";
+    echo "<tr bgcolor=\"$color_line1\"><td>&nbsp;Game name</td><td style='text-align:right;'>" . htmlspecialchars((string) $game_name, ENT_QUOTES, 'UTF-8') . "&nbsp;</td></tr>";
+    echo "<tr bgcolor=\"$color_line2\"><td>&nbsp;Version</td><td style='text-align:right;'>" . htmlspecialchars((string) $release_version, ENT_QUOTES, 'UTF-8') . "&nbsp;</td></tr>";
+    echo "</table>";
+    echo "</div>";
+    TEXT_GOTOMAIN();
+    include "footer.php";
+    exit;
+}
+
 $line_color = $color_line1;
 
 function title($value, $align = "center")

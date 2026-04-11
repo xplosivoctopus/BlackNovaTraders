@@ -39,6 +39,11 @@ $res = $db->Execute("SELECT * FROM {$db->prefix}ships WHERE email=?", array($use
 db_op_result ($db, $res, __LINE__, __FILE__, $db_logging);
 $playerinfo = $res->fields;
 
+$liveRankingData = bnt_get_ranked_player_row((int) $playerinfo['ship_id'], false);
+if ($liveRankingData !== null) {
+    $playerinfo['score'] = (int) $liveRankingData['live_score'];
+}
+
 if ($playerinfo['cleared_defences'] > ' ')
 {
     echo $l->get('l_incompletemove') . " <br>";

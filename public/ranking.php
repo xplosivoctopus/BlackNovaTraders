@@ -35,8 +35,8 @@ $sortMap = array(
     'wealth' => array('label' => 'Net Worth', 'order' => 'raw_asset_value DESC, live_score DESC, character_name ASC'),
     'liquid' => array('label' => 'Liquid Wealth', 'order' => 'liquid_wealth DESC, raw_asset_value DESC, character_name ASC'),
     'planets' => array('label' => 'Empire', 'order' => 'planet_count DESC, planet_asset DESC, character_name ASC'),
-    'good' => array('label' => 'Most Honored', 'order' => 'rating DESC, raw_asset_value DESC, character_name ASC'),
-    'bad' => array('label' => 'Most Notorious', 'order' => 'rating ASC, raw_asset_value DESC, character_name ASC'),
+    'good' => array('label' => 'Most Honored', 'order' => 'CASE WHEN rating > 0 THEN 0 ELSE 1 END ASC, rating DESC, raw_asset_value DESC, character_name ASC'),
+    'bad' => array('label' => 'Most Notorious', 'order' => 'CASE WHEN rating < 0 THEN 0 ELSE 1 END ASC, rating ASC, raw_asset_value DESC, character_name ASC'),
     'bounty' => array('label' => 'Most Wanted', 'order' => 'bounty_total DESC, raw_asset_value DESC, character_name ASC'),
     'efficiency' => array('label' => 'Efficiency', 'order' => 'efficiency DESC, raw_asset_value DESC, character_name ASC'),
     'login' => array('label' => $l_ranks_lastlog, 'order' => 'last_login DESC, character_name ASC'),
@@ -63,12 +63,14 @@ $boards = array(
         'metric' => 'rating',
         'suffix' => ' rep',
         'order' => 'rating DESC, raw_asset_value DESC, character_name ASC',
+        'where' => 'rating > 0',
         'meta' => 'Positive reputation. This is not a PvP kill rating.',
     ),
     'Most Notorious' => array(
         'metric' => 'rating',
         'suffix' => ' rep',
         'order' => 'rating ASC, raw_asset_value DESC, character_name ASC',
+        'where' => 'rating < 0',
         'meta' => 'Negative reputation. High infamy, not necessarily high combat skill.',
     ),
     'Deepest Pockets' => array(
@@ -93,7 +95,12 @@ $boards = array(
 
 $boardResults = array();
 foreach ($boards as $boardTitle => $boardConfig) {
-    $boardQuery = $db->SelectLimit("SELECT * FROM ({$basePlayerSql}) ranked_players ORDER BY " . $boardConfig['order'], 5);
+    $boardSql = "SELECT * FROM ({$basePlayerSql}) ranked_players";
+    if (!empty($boardConfig['where'])) {
+        $boardSql .= " WHERE " . $boardConfig['where'];
+    }
+    $boardSql .= " ORDER BY " . $boardConfig['order'];
+    $boardQuery = $db->SelectLimit($boardSql, 5);
     db_op_result($db, $boardQuery, __LINE__, __FILE__, $db_logging);
     $rows = array();
     if ($boardQuery) {

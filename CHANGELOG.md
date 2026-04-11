@@ -94,6 +94,7 @@ This changelog is organized by project state and change area rather than by date
 ### Ranking, score, and bounty changes
 
 - Reworked leaderboard and score calculations so rankings better reflect live game state rather than stale or misleading cached values.
+- Reworked ranking balance and leaderboard integrity so standings better reflect live net worth, bounty state, and reputation data.
 - Added `public/includes/rankings.php`.
 - Changed ranking-related logic in:
   - `public/ranking.php`
@@ -105,6 +106,7 @@ This changelog is organized by project state and change area rather than by date
 ### Addon and extensibility support
 
 - Added addon infrastructure in `public/includes/addons.php` and `public/addon.php`.
+- Added broader UX/social/addon support work including cockpit improvements, social/mail improvements, and extensibility hooks.
 - Added root-level addon bundles:
   - `addons/event_calendar/`
   - `addons/ops_beacon/`
@@ -163,13 +165,3 @@ This changelog is organized by project state and change area rather than by date
   - `public/traderoute.php`
   - `public/xenobe_control.php`
   - `public/zoneinfo.php`
-
-## Earlier notable work
-
-### Ranking and scoring
-
-- Reworked ranking balance and leaderboard integrity so standings better reflect live net worth, bounty state, and reputation data.
-
-### UX, social, and addon systems
-
-- Added major cockpit UX, social/mail improvements, and addon infrastructure including the event calendar and ops beacon systems.

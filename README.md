@@ -8,6 +8,7 @@ This codebase has been brought forward to run cleanly on current PHP and MySQL, 
 - Database access modernization through PDO-backed compatibility work, making the project more portable and easier to adapt to other database engines
 - Significant security tightening across authentication, admin access, request handling, and legacy unsafe code paths
 - UX upgrades to make the game more usable and maintainable while preserving the original game structure
+- Ranking and scoring corrections so leaderboard data reflects live net worth, real bounty state, and reputation more accurately
 
 ## Current State
 
@@ -18,6 +19,7 @@ This is not just an archival snapshot. The game has been actively updated to:
 - support a more versatile database layer via PDO compatibility work
 - harden legacy admin and session flows
 - improve the in-game interface and overall usability
+- repair legacy ranking math and leaderboard consistency issues
 
 ## Repository Notes
 

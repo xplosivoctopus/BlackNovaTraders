@@ -34,34 +34,53 @@ $viewer = $viewerRes->fields;
 
 $profileShipId = (int) ($_GET['ship_id'] ?? 0);
 $profileName = trim((string) ($_GET['name'] ?? ''));
+$rankedPlayerSql = bnt_rankings_base_player_sql();
 
 if ($profileShipId > 0) {
     $profileRes = $db->Execute(
-        "SELECT s.ship_id, s.character_name, s.ship_name, s.team, s.score, s.turns_used, s.last_login, s.rating, s.sector,
+        "SELECT ranked.live_score AS score,
+                ranked.raw_asset_value,
+                ranked.liquid_wealth,
+                ranked.planet_count,
+                ranked.bounty_total,
+                s.ship_id, s.character_name, s.ship_name, s.team, s.turns_used, s.last_login, s.rating, s.sector,
                 s.hull, s.engines, s.power, s.computer, s.sensors, s.armor, s.shields, s.beams, s.torp_launchers, s.cloak,
                 s.ship_destroyed, t.team_name
            FROM {$db->prefix}ships s
       LEFT JOIN {$db->prefix}teams t ON s.team = t.id
+      LEFT JOIN ({$rankedPlayerSql}) ranked ON ranked.ship_id = s.ship_id
           WHERE s.ship_id=? LIMIT 1",
         array($profileShipId)
     );
 } elseif ($profileName !== '') {
     $profileRes = $db->Execute(
-        "SELECT s.ship_id, s.character_name, s.ship_name, s.team, s.score, s.turns_used, s.last_login, s.rating, s.sector,
+        "SELECT ranked.live_score AS score,
+                ranked.raw_asset_value,
+                ranked.liquid_wealth,
+                ranked.planet_count,
+                ranked.bounty_total,
+                s.ship_id, s.character_name, s.ship_name, s.team, s.turns_used, s.last_login, s.rating, s.sector,
                 s.hull, s.engines, s.power, s.computer, s.sensors, s.armor, s.shields, s.beams, s.torp_launchers, s.cloak,
                 s.ship_destroyed, t.team_name
            FROM {$db->prefix}ships s
       LEFT JOIN {$db->prefix}teams t ON s.team = t.id
+      LEFT JOIN ({$rankedPlayerSql}) ranked ON ranked.ship_id = s.ship_id
           WHERE s.character_name=? LIMIT 1",
         array($profileName)
     );
 } else {
     $profileRes = $db->Execute(
-        "SELECT s.ship_id, s.character_name, s.ship_name, s.team, s.score, s.turns_used, s.last_login, s.rating, s.sector,
+        "SELECT ranked.live_score AS score,
+                ranked.raw_asset_value,
+                ranked.liquid_wealth,
+                ranked.planet_count,
+                ranked.bounty_total,
+                s.ship_id, s.character_name, s.ship_name, s.team, s.turns_used, s.last_login, s.rating, s.sector,
                 s.hull, s.engines, s.power, s.computer, s.sensors, s.armor, s.shields, s.beams, s.torp_launchers, s.cloak,
                 s.ship_destroyed, t.team_name
            FROM {$db->prefix}ships s
       LEFT JOIN {$db->prefix}teams t ON s.team = t.id
+      LEFT JOIN ({$rankedPlayerSql}) ranked ON ranked.ship_id = s.ship_id
           WHERE s.ship_id=? LIMIT 1",
         array((int) $viewer['ship_id'])
     );
@@ -80,12 +99,14 @@ if (!$profileRes || $profileRes->EOF) {
 }
 
 $profile = $profileRes->fields;
+$profile['score'] = (int) ($profile['score'] ?? 0);
+$profile['raw_asset_value'] = (int) ($profile['raw_asset_value'] ?? 0);
+$profile['liquid_wealth'] = (int) ($profile['liquid_wealth'] ?? 0);
+$profile['planet_count'] = (int) ($profile['planet_count'] ?? 0);
+$profile['bounty_total'] = (int) ($profile['bounty_total'] ?? 0);
 $title = $profile['character_name'] . ' Profile';
 
-$rating = round(sqrt(abs((float) $profile['rating'])));
-if ((float) $profile['rating'] < 0) {
-    $rating *= -1;
-}
+$rating = (int) $profile['rating'];
 
 $techStats = array(
     'Hull' => (int) $profile['hull'],
@@ -106,11 +127,14 @@ if (!empty($techStats)) {
 }
 
 $rankRes = $db->Execute(
-    "SELECT COUNT(*) + 1 AS rank_position FROM {$db->prefix}ships WHERE ship_destroyed='N' AND email NOT LIKE '%@xenobe' AND score > ?",
-    array($profile['score'])
+    "SELECT COUNT(*) + 1 AS rank_position FROM ({$rankedPlayerSql}) ranked_players WHERE ranked_players.raw_asset_value > ?",
+    array($profile['raw_asset_value'])
 );
 db_op_result($db, $rankRes, __LINE__, __FILE__, $db_logging);
 $rankPosition = ($rankRes && !$rankRes->EOF) ? (int) $rankRes->fields['rank_position'] : 0;
+if ((int) $profile['turns_used'] < 1) {
+    $rankPosition = 0;
+}
 
 $isOwnProfile = ((int) $viewer['ship_id'] === (int) $profile['ship_id']);
 $isContact = bnt_is_contact((int) $viewer['ship_id'], (int) $profile['ship_id']);
@@ -284,7 +308,7 @@ echo "<div class='profile-stat-grid'>";
 echo "<div class='profile-stat'><span class='profile-stat__label'>Rank</span><span class='profile-stat__value'>" . ($rankPosition > 0 ? NUMBER($rankPosition) : 'N/A') . "</span></div>";
 echo "<div class='profile-stat'><span class='profile-stat__label'>Score</span><span class='profile-stat__value'>" . NUMBER($profile['score']) . "</span></div>";
 echo "<div class='profile-stat'><span class='profile-stat__label'>Turns Used</span><span class='profile-stat__value'>" . NUMBER($profile['turns_used']) . "</span></div>";
-echo "<div class='profile-stat'><span class='profile-stat__label'>Combat Rating</span><span class='profile-stat__value'>" . NUMBER($rating) . "</span></div>";
+echo "<div class='profile-stat'><span class='profile-stat__label'>Reputation</span><span class='profile-stat__value'>" . NUMBER($rating) . "</span></div>";
 echo "</div>";
 echo "<div style='height:16px;'></div>";
 echo "<div class='profile-meta-list'>";

@@ -25,7 +25,7 @@ if (preg_match("/collect_bounty.php/i", $_SERVER['PHP_SELF'])) {
 function collect_bounty ($attacker, $bounty_on)
 {
     global $db, $l;
-    $res = $db->Execute("SELECT * FROM {$db->prefix}bounty,{$db->prefix}ships WHERE bounty_on = ? AND bounty_on = ship_id and placed_by <> 0", array($bounty_on));
+    $res = $db->Execute("SELECT * FROM {$db->prefix}bounty,{$db->prefix}ships WHERE bounty_on = ? AND bounty_on = ship_id", array($bounty_on));
     if ($res)
     {
         while (!$res->EOF)
@@ -54,5 +54,7 @@ function collect_bounty ($attacker, $bounty_on)
    }
    $resa = $db->Execute("DELETE FROM {$db->prefix}bounty WHERE bounty_on = ?", array($bounty_on));
    db_op_result ($db, $resa, __LINE__, __FILE__);
+   gen_score((int) $attacker);
+   gen_score((int) $bounty_on);
 }
 ?>

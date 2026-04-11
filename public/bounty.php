@@ -147,6 +147,8 @@ switch ($response) {
         $refund = $bty['amount'];
         $resx = $db->Execute("UPDATE {$db->prefix}ships SET last_login=?,turns=turns-1, turns_used=turns_used+1, credits=credits+? WHERE ship_id=?", array($stamp, $refund, $playerinfo['ship_id']));
         db_op_result ($db, $resx, __LINE__, __FILE__, $db_logging);
+        gen_score((int) $playerinfo['ship_id']);
+        gen_score((int) $bty['bounty_on']);
         echo "$l_by_canceled<br>";
         TEXT_GOTOMAIN ();
         die ();
@@ -212,7 +214,7 @@ switch ($response) {
             $score = gen_score ($playerinfo['ship_id']);
             $maxtrans = $score * $score * $bounty_maxvalue;
             $previous_bounty = 0;
-            $pb = $db->Execute("SELECT SUM(amount) AS totalbounty FROM {$db->prefix}ships WHERE bounty_on = ? AND placed_by = ?;", array($bounty_on, $playerinfo['ship_id']));
+            $pb = $db->Execute("SELECT SUM(amount) AS totalbounty FROM {$db->prefix}bounty WHERE bounty_on = ? AND placed_by = ?;", array($bounty_on, $playerinfo['ship_id']));
             db_op_result ($db, $pb, __LINE__, __FILE__, $db_logging);
             if ($pb)
             {
@@ -235,6 +237,8 @@ switch ($response) {
         $stamp = date("Y-m-d H-i-s");
         $resx = $db->Execute("UPDATE {$db->prefix}ships SET last_login=?, turns=turns-1, turns_used=turns_used+1, credits=credits-? WHERE ship_id=?", array($stamp, $amount, $playerinfo['ship_id']));
         db_op_result ($db, $resx, __LINE__, __FILE__, $db_logging);
+        gen_score((int) $playerinfo['ship_id']);
+        gen_score((int) $bounty_on);
         echo "$l_by_placed<br>";
         TEXT_GOTOMAIN ();
         die ();

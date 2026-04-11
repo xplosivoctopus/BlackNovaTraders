@@ -14,19 +14,17 @@ This changelog is organized by project state and change area rather than by date
 
 - Moved recent fix tracking out of `README.md` and into this changelog so the README stays focused on project overview, setup, and durable architecture/security notes.
 
-## Baseline Comparison: `/bnt` Snapshot vs Current Game
-
-The `/var/www/play/bnt/` tree appears to be the older flat BlackNova Traders application snapshot. The current game has been reorganized and modernized around `/var/www/play/public/` plus root-level project metadata and dependencies.
+## Major Project Changes
 
 ### Project structure and packaging
 
-- Reorganized the game from a legacy flat webroot in `/bnt` into a more standard project layout with:
+- Reorganized the game into a more standard project layout with:
   - `public/` as the web-serving directory
   - root-level `README.md`, `LICENSE`, and `CHANGELOG.md`
   - Composer-managed dependencies in `vendor/`
   - addon/plugin-style code in `addons/`
 - Added `composer.json` and `composer.lock` to formalize dependency management.
-- Removed legacy Subversion metadata from the active app tree; `/bnt` still contains `.svn` artifacts from the older snapshot.
+- Removed legacy Subversion metadata from the active app tree.
 - Added `public/config/db_config.example.php` so database configuration can be created from a tracked example instead of only relying on local untracked config state.
 
 ### Authentication and request security
@@ -109,14 +107,14 @@ The `/var/www/play/bnt/` tree appears to be the older flat BlackNova Traders app
 
 ### Password reset and account recovery
 
-- Added dedicated reset/account-recovery flows not present in the old `/bnt` snapshot:
+- Added dedicated reset/account-recovery flows:
   - `public/forgot_password.php`
   - `public/reset_password.php`
   - `public/forced_reset.php`
 
 ### Scheduler, AI, and game-system adjustments
 
-- Updated multiple scheduler files relative to the `/bnt` snapshot, including:
+- Updated multiple scheduler files, including:
   - `public/scheduler.php`
   - `public/sched_funcs.php`
   - `public/sched_igb.php`
@@ -131,7 +129,7 @@ The `/var/www/play/bnt/` tree appears to be the older flat BlackNova Traders app
 
 ### Broadly modified gameplay pages
 
-- The following legacy gameplay pages still exist in the current game but differ materially from the `/bnt` versions:
+- The following gameplay pages were substantially updated:
   - `public/admin.php`
   - `public/bounty.php`
   - `public/create_universe.php`

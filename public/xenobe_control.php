@@ -29,6 +29,54 @@ include "header.php";
 connectdb();
 bigtitle();
 
+$xenobeRequestDefaults = array(
+  'menu' => '',
+  'operation' => '',
+  'user' => '',
+  'character_name' => '',
+  'active' => '',
+  'ship_name' => '',
+  'ship_destroyed' => '',
+  'orders' => '',
+  'aggression' => '',
+  'hull' => '',
+  'engines' => '',
+  'power' => '',
+  'computer' => '',
+  'sensors' => '',
+  'armor' => '',
+  'shields' => '',
+  'beams' => '',
+  'torp_launchers' => '',
+  'cloak' => '',
+  'ship_ore' => '',
+  'ship_organics' => '',
+  'ship_goods' => '',
+  'ship_energy' => '',
+  'ship_colonists' => '',
+  'ship_fighters' => '',
+  'torps' => '',
+  'armor_pts' => '',
+  'dev_beacon' => '',
+  'dev_warpedit' => '',
+  'dev_genesis' => '',
+  'dev_minedeflector' => '',
+  'dev_emerwarp' => '',
+  'dev_escapepod' => '',
+  'dev_fuelscoop' => '',
+  'credits' => '',
+  'turns' => '',
+  'sector' => '',
+  'character' => '',
+  'xenlevel' => '',
+  'shipname' => '',
+);
+
+foreach ($xenobeRequestDefaults as $xenobeField => $defaultValue)
+{
+    $$xenobeField = $_POST[$xenobeField] ?? $_GET[$xenobeField] ?? $defaultValue;
+}
+
 function CHECKED($yesno)
 {
   return(($yesno == "Y") ? "CHECKED" : "");
@@ -53,8 +101,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
   bnt_require_csrf();
 }
 
-$swordfish = '';
-
   // ******************************
   // ******** MAIN MENU ***********
   // ******************************
@@ -70,7 +116,6 @@ $swordfish = '';
     echo "<option value=clearlog>Clear All Xenobe Log Files</option>";
     echo "<option value=dropxenobe>Drop and Re-Install Xenobe Database</option>";
     echo "</select>";
-    echo "<input type=hidden name=swordfish value=$swordfish>";
     echo "&nbsp;<input type=submit value=submit>";
     echo "</form>";
   }
@@ -310,7 +355,6 @@ $swordfish = '';
         }
       }
       echo "<input type=hidden name=menu value=xenobeedit>";
-      echo "<input type=hidden name=swordfish value=$swordfish>";
       echo "</form>";
     }
     // ***********************************************
@@ -358,7 +402,6 @@ $swordfish = '';
         echo "Invalid operation";
       }
       echo "<input type=hidden name=menu value=dropxenobe>";
-      echo "<input type=hidden name=swordfish value=$swordfish>";
       echo "</form>";
     }
     // ***********************************************
@@ -394,7 +437,6 @@ $swordfish = '';
         echo "Invalid operation";
       }
       echo "<input type=hidden name=menu value=clearlog>";
-      echo "<input type=hidden name=swordfish value=$swordfish>";
       echo "</form>";
     }
     // ***********************************************
@@ -542,7 +584,6 @@ $swordfish = '';
         echo "Invalid operation";
       }
       echo "<input type=hidden name=menu value=createnew>";
-      echo "<input type=hidden name=swordfish value=$swordfish>";
       echo "</form>";
     }
     else
@@ -554,7 +595,6 @@ $swordfish = '';
     {
       echo "<br><br>";
       echo "<form action=xenobe_control.php method=post>";
-      echo "<input type=hidden name=swordfish value=$swordfish>";
       echo "<input type=submit value=\"Return to main menu\">";
       echo "</form>";
     }

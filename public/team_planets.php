@@ -36,6 +36,8 @@ $res = $db->Execute("SELECT * FROM {$db->prefix}ships WHERE email='$username'");
 db_op_result ($db, $res, __LINE__, __FILE__, $db_logging);
 $playerinfo = $res->fields;
 
+$sort = trim((string) ($_GET['sort'] ?? ''));
+
 if ($playerinfo['team'] == 0)
 {
     echo "<br>$l_teamplanet_notally";

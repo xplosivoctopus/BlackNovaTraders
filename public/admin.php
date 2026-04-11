@@ -28,7 +28,94 @@ include "header.php";
 
 connectdb ();
 bigtitle ();
-$swordfish = '';
+
+$adminRequestDefaults = array(
+    'action' => '',
+    'command' => '',
+    'operation' => '',
+    'user' => '',
+    'force_password_reset' => '',
+    'character_name' => '',
+    'email' => '',
+    'ship_name' => '',
+    'ship_destroyed' => '',
+    'hull' => '',
+    'engines' => '',
+    'power' => '',
+    'computer' => '',
+    'sensors' => '',
+    'armor' => '',
+    'shields' => '',
+    'beams' => '',
+    'torp_launchers' => '',
+    'cloak' => '',
+    'ship_ore' => '',
+    'ship_organics' => '',
+    'ship_goods' => '',
+    'ship_energy' => '',
+    'ship_colonists' => '',
+    'ship_fighters' => '',
+    'torps' => '',
+    'armor_pts' => '',
+    'dev_beacon' => '',
+    'dev_warpedit' => '',
+    'dev_genesis' => '',
+    'dev_minedeflector' => '',
+    'dev_emerwarp' => '',
+    'dev_escapepod' => '',
+    'dev_fuelscoop' => '',
+    'credits' => '',
+    'turns' => '',
+    'sector' => '',
+    'radius' => '',
+    'planet' => '',
+    'sector_name' => '',
+    'zone_id' => '',
+    'beacon' => '',
+    'distance' => '',
+    'angle1' => '',
+    'angle2' => '',
+    'port_type' => '',
+    'port_organics' => '',
+    'port_ore' => '',
+    'port_goods' => '',
+    'port_energy' => '',
+    'sector_id' => '',
+    'defeated' => '',
+    'name' => '',
+    'base' => '',
+    'sells' => '',
+    'owner' => '',
+    'organics' => '',
+    'ore' => '',
+    'goods' => '',
+    'energy' => '',
+    'corp' => '',
+    'colonists' => '',
+    'fighters' => '',
+    'prod_organics' => '',
+    'prod_ore' => '',
+    'prod_goods' => '',
+    'prod_energy' => '',
+    'prod_fighters' => '',
+    'prod_torp' => '',
+    'zone' => '',
+    'zone_name' => '',
+    'zone_beacon' => '',
+    'zone_attack' => '',
+    'zone_warpedit' => '',
+    'zone_planet' => '',
+    'zone_hull' => '',
+    'ban' => '',
+    'ip' => '',
+    'class' => '',
+    'player' => '',
+);
+
+foreach ($adminRequestDefaults as $adminField => $defaultValue)
+{
+    $$adminField = $_POST[$adminField] ?? $_GET[$adminField] ?? $defaultValue;
+}
 
 function checked($yesno)
 {
@@ -1263,7 +1350,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                 }
             }
             echo "<input type='hidden' name='menu' value='useredit'>";
-            echo "<input type='hidden' name='swordfish' value='$swordfish'>";
             echo "</form>";
         }
         elseif ($module == "univedit")
@@ -1275,7 +1361,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             {
                 echo "<form action='admin.php' method='post'>";
                 echo "Universe Size: <input type='text' name='radius' value=\"$universe_size\">";
-                echo "<input type='hidden' name='swordfish' value='$swordfish'>";
                 echo "<input type='hidden' name='menu' value='univedit'>";
                 echo "<input type='hidden' name='action' value='doexpand'> ";
                 echo "<input type='submit' value=\"Play God\">";
@@ -1405,7 +1490,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                 }
             }
             echo "<input type='hidden' name='menu' value='sectedit'>";
-            echo "<input type='hidden' name='swordfish' value='$swordfish'>";
             echo "</form>";
         }
         elseif ($module == "planedit")
@@ -1523,7 +1607,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             }
 
             echo "<input type='hidden' name='menu' value='planedit'>";
-            echo "<input type='hidden' name='swordfish' value=$swordfish>";
             echo "</form>";
         }
         elseif ($module == "linkedit")
@@ -1591,7 +1674,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             }
 
             echo "<input type='hidden' name=menu value=zoneedit>";
-            echo "<input type='hidden' name=swordfish value=$swordfish>";
             echo "</form>";
         }
         elseif ($module == "ipedit")
@@ -1600,7 +1682,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             if (empty($command))
             {
                 echo "<form action=admin.php method=post>";
-                echo "<input type='hidden' name=swordfish value=$swordfish>";
                 echo "<input type='hidden' name=command value=showips>";
                 echo "<input type='hidden' name=menu value=ipedit>";
                 echo "<input type=submit value=\"Show player's ips\">";
@@ -1687,7 +1768,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 
                              echo "<td align=center nowrap valign=center><font size=2 color=white>" .
                                   "<form action=admin.php method=post>" .
-                                  "<input type='hidden' name=swordfish value=$swordfish>" .
                                   "<input type='hidden' name=command value=unbanip>" .
                                   "<input type='hidden' name=menu value=ipedit>" .
                                   "<input type='hidden' name=ban value=$ban>" .
@@ -1760,14 +1840,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 
                          echo "<td align=center nowrap valign=center><font size=2 color=white>" .
                               "<form action=admin.php method=post>" .
-                              "<input type='hidden' name=swordfish value=$swordfish>" .
                               "<input type='hidden' name=command value=banip>" .
                               "<input type='hidden' name=menu value=ipedit>" .
                               "<input type='hidden' name=ip value=$ip>" .
                               "<input type=submit value=Ban>" .
                               "</form>" .
                               "<form action=admin.php method=post>" .
-                              "<input type='hidden' name=swordfish value=$swordfish>" .
                               "<input type='hidden' name=command value=unbanip>" .
                               "<input type='hidden' name=menu value=ipedit>" .
                               "<input type='hidden' name=ip value=$ip>" .
@@ -1777,7 +1855,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 
                     echo "</table><p>" .
                          "<form action=admin.php method=post>" .
-                         "<input type='hidden' name=swordfish value=$swordfish>" .
                          "<input type='hidden' name=menu value=ipedit>" .
                          "<input type=submit value=\"Return to IP bans menu\">" .
                          "</form>";
@@ -1793,7 +1870,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                     echo "<table border=0>" .
                          "<tr><td align=right>" .
                          "<form action=admin.php method=post>" .
-                         "<input type='hidden' name=swordfish value=$swordfish>" .
                          "<input type='hidden' name=menu value=ipedit>" .
                          "<input type='hidden' name=command value=banip2>" .
                          "<input type='hidden' name=ip value=$ip>" .
@@ -1810,7 +1886,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                          "</form>";
 
                     echo "<form action=admin.php method=post>" .
-                         "<input type='hidden' name=swordfish value=$swordfish>" .
                          "<input type='hidden' name=menu value=ipedit>" .
                          "<input type=submit value=\"Return to IP bans menu\">" .
                          "</form>";
@@ -1848,7 +1923,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                     }
 
                     echo "<form action=admin.php method=post>" .
-                         "<input type='hidden' name=swordfish value=$swordfish>" .
                          "<input type='hidden' name=menu value=ipedit>" .
                          "<input type=submit value=\"Return to IP bans menu\">" .
                          "</form>";
@@ -1922,7 +1996,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                 }
 
                 echo "<form action=admin.php method=post>" .
-                     "<input type='hidden' name=swordfish value=$swordfish>" .
                      "<input type='hidden' name=menu value=ipedit>" .
                      "<input type=submit value=\"Return to IP bans menu\">" .
                      "</form>";
@@ -1931,12 +2004,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         elseif ($module == "logview")
         {
             echo "<form action=log.php method=post>" .
-                 "<input type='hidden' name=swordfish value=$swordfish>" .
                  "<input type='hidden' name=player value=0>" .
                  "<input type=submit value=\"View admin log\">" .
                  "</form>" .
                  "<form action=log.php method=post>" .
-                 "<input type='hidden' name=swordfish value=$swordfish>" .
                  "<select name=player>";
 
             $res = $db->execute("SELECT ship_id, character_name FROM {$db->prefix}ships ORDER BY character_name ASC;");

@@ -22,21 +22,18 @@ INSTALLATION
    You need to set up a background task thats called every X minutes.
    You can set this to any interval you want, but 5 or 6 minutes are good
    standard values.
-   This task needs to call the web page scheduler.php passing the admin
-   password to it, eg by accessing:
+   This task should run `scheduler.php` from the command line, eg:
 
-   http://localhost/blacknova/scheduler.php?swordfish=password
+   php /path/to/blacknova/public/scheduler.php
    
-   On UNIX and Linux, you can achieve this by using cron to call lynx to access 
-   the pages at specified times.
+   On UNIX and Linux, you can achieve this by using cron to call PHP directly.
 
 
    A sample crontab follows:
 
-*/6 * * * * /usr/bin/lynx --dump http://localhost/blacknova/scheduler.php?swordfish=password > /dev/null
+*/6 * * * * /usr/bin/php /path/to/blacknova/public/scheduler.php > /dev/null
 
-   You may need to alter the URL to point to your exact domain name 
-   and path. You will also need to change the password to your admin password
+   You will need to alter the filesystem path to match your installation.
 
    To specify how fast-paced you want the game to be, you will need to
    edit the file config.php and select how many minutes you want between
@@ -103,4 +100,3 @@ setsebool -P httpd_can_sendmail=1
 To allow the web server to talk to the MySQL server. Issue this command: 
 
 setsebool -P httpd_can_network_connect_db 1 
-

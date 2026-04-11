@@ -35,6 +35,8 @@ $res = $db->Execute("SELECT * FROM {$db->prefix}ships WHERE email='$username'");
 db_op_result ($db, $res, __LINE__, __FILE__, $db_logging);
 $playerinfo = $res->fields;
 
+$sort = trim((string) ($_GET['sort'] ?? ''));
+
 $query = "SELECT * FROM {$db->prefix}sector_defence WHERE ship_id=$playerinfo[ship_id]";
 db_op_result ($db, $query, __LINE__, __FILE__, $db_logging);
 if (!empty($sort))

@@ -47,8 +47,9 @@ $res = $db->Execute("SELECT character_name, ship_id FROM {$db->prefix}ships WHER
 db_op_result ($db, $res, __LINE__, __FILE__, $db_logging);
 $playerinfo = $res->fields;
 
-$swordfish = $_REQUEST['swordfish'] ?? '';
-$adminLogAccess = bnt_is_admin_user() || bnt_admin_secret_matches($swordfish);
+$player = isset($_REQUEST['player']) ? (int) $_REQUEST['player'] : 0;
+$startdate = trim((string) ($_REQUEST['startdate'] ?? ''));
+$adminLogAccess = bnt_is_admin_user();
 
 if ($adminLogAccess) // Check if called by admin script
 {

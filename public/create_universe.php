@@ -135,6 +135,33 @@ connectdb();
 
 bigtitle();
 
+$createUniverseRequestDefaults = array(
+    'engage' => '',
+    'step' => '',
+    'special' => '1',
+    'ore' => '15',
+    'organics' => '10',
+    'goods' => '15',
+    'energy' => '10',
+    'initscommod' => '100.00',
+    'initbcommod' => '100.00',
+    'sektors' => '',
+    'fedsecs' => '',
+    'loops' => '',
+    'planets' => '10',
+    'spp' => '',
+    'oep' => '',
+    'ogp' => '',
+    'gop' => '',
+    'enp' => '',
+    'nump' => '',
+);
+
+foreach ($createUniverseRequestDefaults as $createUniverseField => $defaultValue)
+{
+    $$createUniverseField = $_POST[$createUniverseField] ?? $_GET[$createUniverseField] ?? $defaultValue;
+}
+
 // Manually set step var if info isn't correct.
 
 if (!isset($engage))
@@ -176,7 +203,7 @@ if ($bnt_ls)
       echo "- your cronjob calls <strong>scheduler.php</strong><br>";
 
         echo "<br>This URL will be used on the Public list: ";
-        $gm_url = $SERVER_NAME;
+        $gm_url = $_SERVER['SERVER_NAME'] ?? '';
         if ( ($gm_url == "localhost") || ($gm_url == "127.0.0.1") || ($gm_url == "") )
         {
             $gm_url = $gamedomain . $gamepath;
@@ -225,7 +252,6 @@ echo"</table>";
 
     echo "<input type=hidden name=engage value=1>\n";
     echo "<input type=hidden name=step value=2>\n";
-    echo "<input type=hidden name=swordfish value=$swordfish>\n";
 
     Table_Header("Submit Settings");
     Table_1Col("<p align='center'><input type=submit value=Submit><input type=reset value=Reset></p>");
@@ -265,7 +291,6 @@ echo"</table>";
       echo "<input type=hidden name=fedsecs value=$fedsecs>\n";
       echo "<input type=hidden name=loops value=$loops>\n";
       echo "<input type=hidden name=engage value=2>\n";
-      echo "<input type=hidden name=swordfish value=$swordfish>\n";
 
     Table_2Col("Special ports",$spp);
     Table_2Col("Ore ports",$oep);
@@ -347,7 +372,6 @@ echo"</table>";
       echo "<input type=hidden name=fedsecs value=$fedsecs>";
       echo "<input type=hidden name=loops value=$loops>";
       echo "<input type=hidden name=engage value=2>";
-      echo "<input type=hidden name=swordfish value=$swordfish>";
       echo "<p align='center'><input type=submit value=Confirm></p>";
       echo "</form>";
       break;
@@ -666,7 +690,6 @@ echo"</table>";
       echo "<input type=hidden name=fedsecs value=$fedsecs>";
       echo "<input type=hidden name=loops value=$loops>";
       echo "<input type=hidden name=engage value=2>";
-      echo "<input type=hidden name=swordfish value=$swordfish>";
       echo "<p align='center'><input type=submit value=Confirm></p>";
       echo "</form>";
       include_once "footer.php";
@@ -827,7 +850,6 @@ Table_Footer("Completed successfully.");
       echo "<INPUT TYPE=HIDDEN NAME=fedsecs VALUE=$fedsecs>";
       echo "<input type=hidden name=loops value=$loops>";
       echo "<input type=hidden name=engage value=2>";
-      echo "<input type=hidden name=swordfish value=$swordfish>";
       echo "<p align='center'><input type=submit value=Confirm></p>";
       echo "</form>";
       include_once "footer.php";

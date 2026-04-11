@@ -2,15 +2,25 @@
 
 function bnt_cookie_options(): array
 {
-    global $gamepath, $gamedomain;
+    global $cookie_path, $cookie_domain;
 
-    return [
+    $path = '/';
+    if (isset($cookie_path) && is_string($cookie_path) && $cookie_path !== '') {
+        $path = $cookie_path;
+    }
+
+    $options = [
         'expires' => time() + (3600 * 24 * 365),
-        'path' => $gamepath ?: '/',
-        'domain' => $gamedomain ?: '',
+        'path' => $path,
         'httponly' => true,
         'samesite' => 'Lax',
     ];
+
+    if (isset($cookie_domain) && is_string($cookie_domain) && $cookie_domain !== '') {
+        $options['domain'] = $cookie_domain;
+    }
+
+    return $options;
 }
 
 function bnt_password_is_hashed(string $storedPassword): bool
@@ -20,15 +30,8 @@ function bnt_password_is_hashed(string $storedPassword): bool
 
 function bnt_clear_login_cookie(): void
 {
-    global $gamepath, $gamedomain;
-
-    $options = [
-        'expires' => time() - 3600,
-        'path' => $gamepath ?: '/',
-        'domain' => $gamedomain ?: '',
-        'httponly' => true,
-        'samesite' => 'Lax',
-    ];
+    $options = bnt_cookie_options();
+    $options['expires'] = time() - 3600;
 
     setcookie('userpass', '', $options);
     setcookie('userpass', '', time() - 3600);
@@ -184,10 +187,6 @@ function bnt_admin_secret_matches(?string $submittedSecret = null): bool
 {
     global $adminpass;
 
-    if ($submittedSecret === null) {
-        $submittedSecret = $_REQUEST['swordfish'] ?? '';
-    }
-
     return is_string($submittedSecret)
         && $submittedSecret !== ''
         && is_string($adminpass)
@@ -195,13 +194,18 @@ function bnt_admin_secret_matches(?string $submittedSecret = null): bool
         && hash_equals($adminpass, $submittedSecret);
 }
 
-function bnt_require_admin(bool $allowSharedSecret = false): void
+function bnt_is_cli_admin_context(): bool
+{
+    return PHP_SAPI === 'cli';
+}
+
+function bnt_require_admin(bool $allowCli = false): void
 {
     if (bnt_is_admin_user()) {
         return;
     }
 
-    if ($allowSharedSecret && bnt_admin_secret_matches()) {
+    if ($allowCli && bnt_is_cli_admin_context()) {
         return;
     }
 

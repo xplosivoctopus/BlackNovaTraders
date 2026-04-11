@@ -70,6 +70,12 @@ if (array_key_exists('teamname', $_POST) == true)
     $teamname = $_POST['teamname'];
 }
 
+$teamdesc = null;
+if (array_key_exists('teamdesc', $_POST) == true)
+{
+    $teamdesc = $_POST['teamdesc'];
+}
+
 $confirmed = null;
 if (array_key_exists('confirmed', $_REQUEST) == true)
 {
@@ -87,6 +93,15 @@ if (array_key_exists('who', $_REQUEST) == true)
 {
     $who  = (int)$_REQUEST['who'];
 }
+
+$newcreator = null;
+if (array_key_exists('newcreator', $_REQUEST) == true)
+{
+    $newcreator = (int) $_REQUEST['newcreator'];
+}
+
+$order = trim((string) ($_GET['order'] ?? ''));
+$type = trim((string) ($_GET['type'] ?? ''));
 
 // Setting up some recordsets.
 // I noticed before the rewriting of this page that in some case recordset may be fetched more thant once, which is NOT optimized.
@@ -665,43 +680,44 @@ function DISPLAY_ALL_TEAMS()
     global $db;
     global $db_logging;
 
+    $sortMap = array(
+        'team_name' => 'team_name',
+        'number_of_members' => 'number_of_members',
+        'character_name' => 'coordinator_name',
+        'total_score' => 'total_score',
+    );
+
     echo "<br><br>$l_team_galax<br>";
     echo "<table style='width:100%; border:#fff 1px solid;' border='0' cellspacing='0' cellpadding='2'>";
     echo "<tr bgcolor=\"$color_header\">";
 
-    if ($type == "d")
-    {
-        $type = "a";
-        $by = "ASC";
-    }
-    else
-    {
-        $type = "d";
-        $by = "DESC";
-    }
-    echo "<td><strong><a class='new_link' style='font-size:14px;' href=teams.php?order=team_name&type=$type>$l_name</a></strong></td>";
-    echo "<td><strong><a class='new_link' style='font-size:14px;' href=teams.php?order=number_of_members&type=$type>$l_team_members</a></strong></td>";
-    echo "<td><strong><a class='new_link' style='font-size:14px;' href=teams.php?order=character_name&type=$type>$l_team_coord</a></strong></td>";
-    echo "<td><strong><a class='new_link' style='font-size:14px;' href=teams.php?order=total_score&type=$type>$l_score</a></strong></td>";
+    $sortDirection = ($type === 'a') ? 'ASC' : 'DESC';
+    $nextType = ($sortDirection === 'ASC') ? 'd' : 'a';
+    $orderBy = $sortMap[$order] ?? "{$db->prefix}teams.team_name";
+
+    echo "<td><strong><a class='new_link' style='font-size:14px;' href=teams.php?order=team_name&type=$nextType>$l_name</a></strong></td>";
+    echo "<td><strong><a class='new_link' style='font-size:14px;' href=teams.php?order=number_of_members&type=$nextType>$l_team_members</a></strong></td>";
+    echo "<td><strong><a class='new_link' style='font-size:14px;' href=teams.php?order=character_name&type=$nextType>$l_team_coord</a></strong></td>";
+    echo "<td><strong><a class='new_link' style='font-size:14px;' href=teams.php?order=total_score&type=$nextType>$l_score</a></strong></td>";
     echo "</tr>";
-    $sql_query = "SELECT {$db->prefix}ships.character_name,
-                COUNT(*) as number_of_members,
-                ROUND(SQRT(SUM(POW({$db->prefix}ships.score,2)))) as total_score,
+    $sql_query = "SELECT team_totals.number_of_members,
+                team_totals.total_score,
                 {$db->prefix}teams.id,
                 {$db->prefix}teams.team_name,
-                {$db->prefix}teams.creator
-                FROM {$db->prefix}ships
-                LEFT JOIN {$db->prefix}teams ON {$db->prefix}ships.team = {$db->prefix}teams.id
-                WHERE {$db->prefix}ships.team = {$db->prefix}teams.id AND admin='N'
-                GROUP BY {$db->prefix}teams.team_name";
-
-    // Setting if the order is Ascending or descending, if any.
-    // Default is ordered by teams.team_name
-    if ($order)
-    {
-        $sql_query .= " ORDER BY " . $order . " $by";
-    }
-    $sql_query .= ";";
+                {$db->prefix}teams.creator,
+                coordinator.character_name AS coordinator_name
+                FROM {$db->prefix}teams
+                JOIN (
+                    SELECT team,
+                        COUNT(*) AS number_of_members,
+                        ROUND(SQRT(SUM(POW(score, 2)))) AS total_score
+                    FROM {$db->prefix}ships
+                    WHERE team > 0
+                    GROUP BY team
+                ) AS team_totals ON team_totals.team = {$db->prefix}teams.id
+                LEFT JOIN {$db->prefix}ships AS coordinator ON coordinator.ship_id = {$db->prefix}teams.creator
+                WHERE {$db->prefix}teams.admin='N'
+                ORDER BY {$orderBy} {$sortDirection};";
 
     $res = $db->Execute($sql_query) or die($db->ErrorMsg());
     db_op_result ($db, $res, __LINE__, __FILE__, $db_logging);
@@ -714,17 +730,8 @@ function DISPLAY_ALL_TEAMS()
         echo "<td><a href='teams.php?teamwhat=1&whichteam={$row['id']}'>{$row['team_name']}</a></td>";
         echo "<td>{$row['number_of_members']}</td>";
 
-        // This fixes it so that it actually displays the coordinator, and not the first member of the team.
-        $res2 = $db->Execute("SELECT character_name FROM {$db->prefix}ships WHERE ship_id = ?;", array($row['creator'])) or die($db->ErrorMsg());
-        db_op_result ($db, $res2, __LINE__, __FILE__, $db_logging);
-        while (!$res2->EOF)
-        {
-            $row2 = $res2->fields;
-            $res2->MoveNext();
-        }
-
-        // If there is a way to redo the original sql query instead, please, do so, but I didnt see a way to.
-        echo "<td><a href='mailto2.php?name={$row2['character_name']}'>{$row2['character_name']}</a></td>";
+        $coordinatorName = $row['coordinator_name'] ?? '';
+        echo "<td><a href='mailto2.php?name={$coordinatorName}'>{$coordinatorName}</a></td>";
         echo "<td>{$row['total_score']}</td>";
         echo "</tr>";
         if ($color == $color_line1)

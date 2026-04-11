@@ -9,6 +9,11 @@ This changelog is organized by project state and change area rather than by date
 ### Security
 
 - Enforced server-side CSRF validation for all `POST` submissions to `public/port2.php`, closing the commodity-trading write path that previously accepted missing or invalid CSRF tokens.
+- Removed the legacy request-to-variable bootstrap shim from `public/global_cleanups.php` so `GET`/`POST`/`COOKIE` keys no longer become ambient local variables across the app.
+- Reworked `public/teams.php` team sorting to use explicit request parsing and an allowlisted sort map instead of concatenating request-populated values into SQL.
+- Added explicit request initialization to legacy pages that previously relied on ambient `$sort`, `$order`, `$type`, `$action`, or related request variables, including `public/admin.php`, `public/corp.php`, `public/create_universe.php`, `public/defence_report.php`, `public/log.php`, `public/ngai_control.php`, `public/planet_report.php`, `public/team_planets.php`, and `public/xenobe_control.php`.
+- Stopped using request-derived cookie scope in `public/includes/auth.php`; login cookies now default to a safe root path unless an explicit cookie scope is configured.
+- Removed request/query-string admin-secret access from protected flows. `public/scheduler.php` now permits CLI execution instead of `swordfish` URL access, `public/log.php` no longer accepts `swordfish`, and the install docs now document CLI scheduler usage.
 
 ### Documentation
 

@@ -17,6 +17,40 @@ include "header.php";
 connectdb();
 bigtitle();
 
+$ngaiRequestDefaults = array(
+    'menu' => '',
+    'operation' => '',
+    'user' => '',
+    'character' => '',
+    'shipname' => '',
+    'sector' => '',
+    'xenlevel' => '',
+    'ship_type' => '',
+    'faction' => '',
+    'home_sector' => '',
+    'hostile_on_scan' => '',
+    'character_name' => '',
+    'ship_name' => '',
+    'credits' => '',
+    'hull' => '',
+    'engines' => '',
+    'power' => '',
+    'computer' => '',
+    'sensors' => '',
+    'beams' => '',
+    'torp_launchers' => '',
+    'shields' => '',
+    'armor' => '',
+    'cloak' => '',
+    'active' => '',
+    'toggle_zone_id' => '',
+);
+
+foreach ($ngaiRequestDefaults as $ngaiField => $defaultValue)
+{
+    $$ngaiField = $_POST[$ngaiField] ?? $_GET[$ngaiField] ?? $defaultValue;
+}
+
 if (!isset($_POST['menu']))
     $module = '';
 else
@@ -30,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function ngai_checked($val)  { return $val === 'Y' ? 'checked' : ''; }
 function ngai_yesno($onoff)  { return $onoff === 'ON' ? 'Y' : 'N'; }
-$sw = '';
 
 // ── Main menu ─────────────────────────────────────────────────────────────────
 if (empty($module))
@@ -45,7 +78,6 @@ if (empty($module))
     echo "<option value='clearlog'>Clear All NGAI Log Entries</option>";
     echo "<option value='voidzones'>Manage Void Zones</option>";
     echo "</select>&nbsp;";
-    echo "<input type='hidden' name='swordfish' value='$sw'>";
     echo "<input type='submit' value='Go'>";
     echo "</form>";
     include "footer.php";
@@ -55,10 +87,9 @@ if (empty($module))
 $button_main = true;
 
 // ── Return-to-main helper ─────────────────────────────────────────────────────
-function ngai_main_button($sw, $module)
+function ngai_main_button($module)
 {
     echo "<br><form action='ngai_control.php' method='post'>";
-    echo "<input type='hidden' name='swordfish' value='" . htmlspecialchars($sw) . "'>";
     echo "<input type='submit' value='Return to main menu'>";
     echo "</form>";
 }
@@ -96,7 +127,6 @@ if ($module === 'createnew')
         echo "</table><br>";
         echo "<input type='hidden' name='operation' value='docreate'>";
         echo "<input type='hidden' name='menu' value='createnew'>";
-        echo "<input type='hidden' name='swordfish' value='$sw'>";
         echo "<input type='submit' value='Create NGAI Ship'>";
     }
     elseif ($operation === 'docreate')
@@ -190,7 +220,6 @@ if ($module === 'createnew')
         }
 
         echo "<input type='hidden' name='menu' value='createnew'>";
-        echo "<input type='hidden' name='swordfish' value='$sw'>";
         echo "<input type='submit' value='Create another'>";
         $button_main = true;
     }
@@ -323,7 +352,6 @@ elseif ($module === 'editngai')
             echo "<p style='color:#f55;'>Error: " . htmlspecialchars($db->ErrorMsg()) . "</p>";
 
         echo "<input type='hidden' name='menu' value='editngai'>";
-        echo "<input type='hidden' name='swordfish' value='$sw'>";
         echo "<input type='submit' value='Edit another'>";
         $button_main = true;
     }
@@ -390,7 +418,6 @@ elseif ($module === 'deletengai')
     }
 
     echo "<input type='hidden' name='menu' value='deletengai'>";
-    echo "<input type='hidden' name='swordfish' value='$sw'>";
     echo "</form>";
 }
 
@@ -422,7 +449,6 @@ elseif ($module === 'clearlog')
     }
 
     echo "<input type='hidden' name='menu' value='clearlog'>";
-    echo "<input type='hidden' name='swordfish' value='$sw'>";
     echo "</form>";
 }
 
@@ -473,7 +499,6 @@ elseif ($module === 'voidzones')
     }
 
     echo "<input type='hidden' name='menu' value='voidzones'>";
-    echo "<input type='hidden' name='swordfish' value='$sw'>";
     echo "</form>";
 }
 
@@ -484,7 +509,7 @@ else
 
 // ── Return to main menu button ────────────────────────────────────────────────
 if ($button_main)
-    ngai_main_button($swordfish, $module);
+    ngai_main_button($module);
 
 include "footer.php";
 ?>

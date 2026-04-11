@@ -37,6 +37,8 @@ if (array_key_exists('PRepType', $_GET) == true) //!isset($_GET['PRepType']))
     $PRepType = $_GET['PRepType'];
 }
 
+$sort = trim((string) ($_GET['sort'] ?? ''));
+
 
 // Get data about planets
 $res = $db->Execute("SELECT * FROM {$db->prefix}ships WHERE email='$username'");

@@ -82,31 +82,6 @@ if (session_status() !== PHP_SESSION_ACTIVE)
 }
 }
 
-// reg_global_fix,0.1.1,22-09-2004,BNT DevTeam
-if (!defined('reg_global_fix'))define('reg_global_fix', True, TRUE);
-
-foreach ($_POST as $k=>$v)
-{
-    if (!isset($GLOBALS[$k]))
-    {
-        ${$k}=$v;
-    }
-}
-foreach ($_GET as $k=>$v)
-{
-    if (!isset($GLOBALS[$k]))
-    {
-        ${$k}=$v;
-    }
-}
-foreach ($_COOKIE as $k=>$v)
-{
-    if (!isset($GLOBALS[$k]))
-    {
-        ${$k}=$v;
-    }
-}
-
 $userpass = $_COOKIE['userpass'] ?? '';
 $username = (!empty($_SESSION['logged_in']) && !empty($_SESSION['username'])) ? $_SESSION['username'] : '';
 $password = '';

@@ -20,6 +20,13 @@ This changelog is organized by project state and change area rather than by date
 
 - Moved recent fix tracking out of `README.md` and into this changelog so the README stays focused on project overview, setup, and durable architecture/security notes.
 
+### API and integrations
+
+- Added a new JSON API surface under `public/api/` for Discord bots and other integrations.
+- Added public JSON endpoints for rankings, news, ship/profile lookup, and bounty boards.
+- Added authenticated JSON endpoints for current pilot stats, notifications, alerts, and owned planets.
+- Added bearer-token API authentication with hashed token storage plus a session-backed token management endpoint for generating and revoking player API tokens.
+
 ## Major Project Changes
 
 ### Project structure and packaging

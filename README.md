@@ -57,6 +57,16 @@ The old public shared-password style admin flow is no longer the primary access 
 
 See [CHANGELOG.md](CHANGELOG.md) for recent fix-by-fix history.
 
+## Integration API
+
+The project now includes a JSON API under `public/api/` for integrations such as Discord bots.
+
+- Public endpoints include rankings, news, bounty boards, and ship/profile lookup
+- Authenticated endpoints include current pilot stats, notifications, alerts, and owned planets
+- Bearer tokens can be managed through `public/api/token.php` from a logged-in browser session
+
+Start with `public/api/index.php` for the current endpoint list and auth format.
+
 ## License
 
 This project is distributed under the GNU Affero General Public License v3. See [LICENSE](LICENSE).

@@ -51,10 +51,11 @@ The old public shared-password style admin flow is no longer the primary access 
 - Legacy trust in ambient request state has been reduced
 - Admin-only tools are protected behind authenticated admin/developer sessions
 - CSRF protections were added to sensitive POST flows
-- Commodity trading in `public/port2.php` now enforces server-side CSRF validation for all POST submissions
 - Password handling has been modernized
 - Several legacy SQL paths were tightened and modernized
 - Setup and diagnostic pages were updated for current PHP behavior
+
+See [CHANGELOG.md](CHANGELOG.md) for recent fix-by-fix history.
 
 ## License
 

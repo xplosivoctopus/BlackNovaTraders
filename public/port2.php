@@ -42,6 +42,11 @@ if (checklogin () )
     die();
 }
 
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST')
+{
+    bnt_require_csrf();
+}
+
 if ($modal == true)
 {
     echo "<div class='scan-modal-content scan-modal-port-content'>\n";
